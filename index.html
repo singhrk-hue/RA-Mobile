@@ -7,11 +7,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <title>Restaurant Association App</title>
 
-    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-    <!-- Inter Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
@@ -48,13 +45,13 @@
             flex-direction: column;
         }
 
-        /* iOS Header Bar - Light Theme with larger prominent logo */
+        /* Header Bar */
         .ios-header {
-            background: rgba(255, 255, 255, 0.98);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-            height: 74px;
+            height: 72px;
             width: 100%;
             position: absolute;
             top: 0;
@@ -67,10 +64,10 @@
         }
 
         .header-logo img {
-            height: 52px;
+            height: 44px;
             width: auto;
             object-fit: contain;
-            max-width: 210px;
+            max-width: 180px;
         }
 
         .header-actions {
@@ -124,19 +121,18 @@
         }
         .btn-burger:active { opacity: 0.7; }
 
-        /* Main Scrollable Content Area */
+        /* Main Content */
         .app-content {
             flex: 1;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
-            padding-top: calc(74px + 16px);
+            padding-top: calc(72px + 16px);
             padding-bottom: calc(70px + 20px);
             padding-left: 16px;
             padding-right: 16px;
             background-color: #f8fafc;
         }
 
-        /* Views management */
         .app-view {
             display: none;
             animation: fadeIn 0.25s ease-in-out;
@@ -150,7 +146,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* iOS Tab Bar - Light Theme with 6 items */
+        /* Tab Bar */
         .ios-tabbar {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px);
@@ -186,7 +182,6 @@
         .tab-item.active { color: #f97316; }
         .tab-item:active { opacity: 0.7; }
 
-        /* Card components styling - Light Theme */
         .ios-card {
             background: #ffffff;
             border: 1px solid #e2e8f0;
@@ -202,7 +197,7 @@
             border: 1px solid #fed7aa;
         }
 
-        /* Offcanvas Menu Drawer */
+        /* Drawer Overlay */
         .drawer-overlay {
             position: absolute;
             top: 0;
@@ -245,7 +240,7 @@
             
             <header class="ios-header">
                 <div class="header-logo">
-                    <img src="https://g1.restaurantassociation.com/media/images/RA-Newsletter/May-26/RA-black-logo.png" alt="Restaurant Association" onerror="this.src='https://placehold.co/210x52/ffffff/f97316?text=Restaurant+Association';">
+                    <img src="https://restaurantassociation.com/_logos/logo-restaurant-association-light.svg" alt="Restaurant Association" onerror="this.src='https://placehold.co/180x44/ffffff/f97316?text=Restaurant+Assoc';">
                 </div>
                 <div class="header-actions">
                     <button class="btn-search-icon" aria-label="AI Search">
@@ -258,7 +253,6 @@
                 </div>
             </header>
 
-            <!-- Drawer Overlay & Offcanvas Menu -->
             <div class="drawer-overlay" id="drawer-overlay"></div>
             <div class="offcanvas-drawer" id="offcanvas-drawer">
                 <div class="d-flex justify-content-between align-items-center px-4 pb-3 border-bottom">
@@ -266,30 +260,28 @@
                     <button class="btn-close" id="btn-close-drawer" aria-label="Close"></button>
                 </div>
                 <div class="list-group list-group-flush py-2">
-                    <a href="#" class="list-group-item list-group-item-action border-0 py-3 px-4 menu-item-link" data-target="home" data-title="Home">
+                    <a href="#" class="list-group-item list-group-item-action border-0 py-3 px-4 menu-item-link" data-target="home">
                         <i class="bi bi-house-door me-3" style="color: #f97316;"></i> Home
                     </a>
-                    <a href="#" class="list-group-item list-group-item-action border-0 py-3 px-4 menu-item-link" data-target="articles" data-title="Articles">
+                    <a href="#" class="list-group-item list-group-item-action border-0 py-3 px-4 menu-item-link" data-target="articles">
                         <i class="bi bi-journal-richtext me-3 text-primary"></i> Articles
                     </a>
-                    <a href="#" class="list-group-item list-group-item-action border-0 py-3 px-4 menu-item-link" data-target="tvshows" data-title="TV Shows">
+                    <a href="#" class="list-group-item list-group-item-action border-0 py-3 px-4 menu-item-link" data-target="tvshows">
                         <i class="bi bi-tv me-3 text-danger"></i> TV Shows
                     </a>
-                    <a href="#" class="list-group-item list-group-item-action border-0 py-3 px-4 menu-item-link" data-target="jobs" data-title="Jobs">
+                    <a href="#" class="list-group-item list-group-item-action border-0 py-3 px-4 menu-item-link" data-target="jobs">
                         <i class="bi bi-briefcase me-3 text-success"></i> Jobs
                     </a>
-                    <a href="#" class="list-group-item list-group-item-action border-0 py-3 px-4 menu-item-link" data-target="resources" data-title="Resources">
+                    <a href="#" class="list-group-item list-group-item-action border-0 py-3 px-4 menu-item-link" data-target="resources">
                         <i class="bi bi-folder2-open me-3 text-warning"></i> Resources
                     </a>
-                    <a href="#" class="list-group-item list-group-item-action border-0 py-3 px-4 menu-item-link" data-target="benefits" data-title="Benefits">
+                    <a href="#" class="list-group-item list-group-item-action border-0 py-3 px-4 menu-item-link" data-target="benefits">
                         <i class="bi bi-star me-3 text-info"></i> Benefits
                     </a>
                 </div>
             </div>
 
             <main class="app-content">
-                
-                <!-- Home View -->
                 <div id="view-home" class="app-view active">
                     <div class="ios-card text-center py-4 bg-white border-0 shadow-sm">
                         <div class="mb-2">
@@ -303,111 +295,40 @@
                     <h6 class="text-secondary text-uppercase small fw-bold mb-2">Quick Navigation</h6>
                     <div class="row g-2 mb-3">
                         <div class="col-6">
-                            <div class="ios-card text-center py-3 mb-0" style="cursor:pointer;" onclick="switchTab('articles', 'Articles')">
+                            <div class="ios-card text-center py-3 mb-0" style="cursor:pointer;" onclick="switchTab('articles')">
                                 <i class="bi bi-journal-text fs-3 text-primary mb-1 d-block"></i>
                                 <span class="small fw-semibold text-dark">Read Articles</span>
                             </div>
                         </div>
                         <div class="col-6">
-                            <div class="ios-card text-center py-3 mb-0" style="cursor:pointer;" onclick="switchTab('tvshows', 'TV Shows')">
+                            <div class="ios-card text-center py-3 mb-0" style="cursor:pointer;" onclick="switchTab('tvshows')">
                                 <i class="bi bi-play-btn fs-3 text-danger mb-1 d-block"></i>
                                 <span class="small fw-semibold text-dark">Watch Shows</span>
                             </div>
                         </div>
                     </div>
-
-                    <div class="ios-card">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <div>
-                                <h6 class="mb-1 fw-semibold small text-dark">Latest Industry Bulletin</h6>
-                                <p class="text-muted x-small mb-0" style="font-size: 0.75rem;">New supply chain guidelines for Q3</p>
-                            </div>
-                            <span class="badge bg-success bg-opacity-10 text-success px-2 py-1" style="font-size: 0.7rem;">New</span>
-                        </div>
-                    </div>
                 </div>
 
-                <!-- Articles View -->
                 <div id="view-articles" class="app-view">
                     <h6 class="fw-bold mb-3 text-dark">Industry Articles & News</h6>
-                    <div class="ios-card">
-                        <span class="badge badge-orange mb-2" style="font-size: 0.65rem;">Operations</span>
-                        <h6 class="fw-semibold mb-1 text-dark">Maximizing Patio Revenue During Peak Seasons</h6>
-                        <p class="text-muted small mb-2">Expert tips on layout adjustments and outdoor menu optimization.</p>
-                        <div class="text-orange small fw-semibold" style="font-size: 0.8rem; color: #f97316;">Read Full Article <i class="bi bi-arrow-right"></i></div>
-                    </div>
-                    <div class="ios-card">
-                        <span class="badge badge-orange mb-2" style="font-size: 0.65rem;">Technology</span>
-                        <h6 class="fw-semibold mb-1 text-dark">Contactless Ordering & POS Integration Trends</h6>
-                        <p class="text-muted small mb-2">How automated table-side ordering improves table turnover rates.</p>
-                        <div class="text-orange small fw-semibold" style="font-size: 0.8rem; color: #f97316;">Read Full Article <i class="bi bi-arrow-right"></i></div>
-                    </div>
+                    <div class="data-container"></div>
                 </div>
 
-                <!-- TV Shows View -->
                 <div id="view-tvshows" class="app-view">
                     <h6 class="fw-bold mb-3 text-dark">Restaurant TV Shows & Series</h6>
-                    <div class="ios-card">
-                        <div class="position-relative bg-dark rounded-3 p-4 text-center text-white mb-2" style="background: linear-gradient(135deg, #1e293b, #0f172a);">
-                            <i class="bi bi-play-circle-fill text-danger fs-1 mb-2 d-block"></i>
-                            <h6 class="fw-semibold mb-1">Behind the Kitchen Door (Ep. 12)</h6>
-                            <p class="text-white-50 x-small mb-0" style="font-size: 0.75rem;">Mastering high-pressure service rushes</p>
-                        </div>
-                        <button class="btn btn-sm btn-dark w-100 py-1" style="font-size: 0.8rem;">Watch Episode</button>
-                    </div>
-                    <div class="ios-card">
-                        <div class="position-relative bg-dark rounded-3 p-4 text-center text-white mb-2" style="background: linear-gradient(135deg, #1e293b, #0f172a);">
-                            <i class="bi bi-play-circle-fill text-danger fs-1 mb-2 d-block"></i>
-                            <h6 class="fw-semibold mb-1">Chef Spotlights: Innovators</h6>
-                            <p class="text-white-50 x-small mb-0" style="font-size: 0.75rem;">Sustainable sourcing in modern bistros</p>
-                        </div>
-                        <button class="btn btn-sm btn-dark w-100 py-1" style="font-size: 0.8rem;">Watch Episode</button>
-                    </div>
+                    <div class="data-container"></div>
                 </div>
 
-                <!-- Jobs View -->
                 <div id="view-jobs" class="app-view">
                     <h6 class="fw-bold mb-3 text-dark">Hospitality Job Board</h6>
-                    <div class="ios-card">
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <h6 class="fw-semibold mb-0 small text-dark">Executive Head Chef</h6>
-                            <span class="badge bg-success bg-opacity-10 text-success" style="font-size: 0.65rem;">Full-Time</span>
-                        </div>
-                        <p class="text-muted small mb-2">Upscale Bistro • Downtown Area • Competitive Salary</p>
-                        <button class="btn btn-sm btn-outline-dark w-100 py-1" style="font-size: 0.8rem;">Apply Now</button>
-                    </div>
-                    <div class="ios-card">
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <h6 class="fw-semibold mb-0 small text-dark">General Restaurant Manager</h6>
-                            <span class="badge bg-success bg-opacity-10 text-success" style="font-size: 0.65rem;">Full-Time</span>
-                        </div>
-                        <p class="text-muted small mb-2">Hospitality Group • Metro District</p>
-                        <button class="btn btn-sm btn-outline-dark w-100 py-1" style="font-size: 0.8rem;">Apply Now</button>
-                    </div>
+                    <div class="data-container"></div>
                 </div>
 
-                <!-- Resources View -->
                 <div id="view-resources" class="app-view">
                     <h6 class="fw-bold mb-3 text-dark">Operational Toolkits</h6>
-                    <div class="ios-card">
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <h6 class="fw-semibold mb-0 small text-dark">Food Safety & Compliance Guide</h6>
-                            <span class="badge badge-orange" style="font-size: 0.65rem;">PDF</span>
-                        </div>
-                        <p class="text-muted small mb-2">Download checklists for kitchen sanitation and HACCP standards.</p>
-                        <button class="btn btn-sm btn-outline-dark w-100 py-1" style="font-size: 0.8rem;">Download PDF</button>
-                    </div>
-                    <div class="ios-card">
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <h6 class="fw-semibold mb-0 small text-dark">Staff Scheduling Template</h6>
-                            <span class="badge bg-secondary bg-opacity-10 text-secondary" style="font-size: 0.65rem;">Excel</span>
-                        </div>
-                        <p class="text-muted small mb-2">Manage labor cost ratios and weekly shift rotations seamlessly.</p>
-                        <button class="btn btn-sm btn-outline-secondary w-100 py-1" style="font-size: 0.8rem;">Download Spreadsheet</button>
-                    </div>
+                    <div class="data-container"></div>
                 </div>
 
-                <!-- Benefits View -->
                 <div id="view-benefits" class="app-view">
                     <div class="text-center py-2 mb-3">
                         <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex p-3 mb-2">
@@ -425,75 +346,135 @@
                             <span class="text-dark">Legal & HR Advisory Helpline</span>
                             <span class="text-success fw-semibold">Free Access</span>
                         </div>
-                        <div class="d-flex justify-content-between py-2" style="font-size: 0.85rem;">
-                            <span class="text-dark">Annual Convention Passes</span>
-                            <span class="fw-semibold" style="color: #f97316;">VIP Status</span>
-                        </div>
                     </div>
                 </div>
-
             </main>
 
             <nav class="ios-tabbar">
-                <a href="#" class="tab-item active" data-target="home" data-title="Home">
+                <a href="#" class="tab-item active" data-target="home">
                     <i class="bi bi-house-door-fill"></i>
                     <span>Home</span>
                 </a>
-                <a href="#" class="tab-item" data-target="articles" data-title="Articles">
+                <a href="#" class="tab-item" data-target="articles">
                     <i class="bi bi-journal-richtext"></i>
                     <span>Articles</span>
                 </a>
-                <a href="#" class="tab-item" data-target="tvshows" data-title="TV Shows">
+                <a href="#" class="tab-item" data-target="tvshows">
                     <i class="bi bi-tv"></i>
                     <span>TV Shows</span>
                 </a>
-                <a href="#" class="tab-item" data-target="jobs" data-title="Jobs">
+                <a href="#" class="tab-item" data-target="jobs">
                     <i class="bi bi-briefcase"></i>
                     <span>Jobs</span>
                 </a>
-                <a href="#" class="tab-item" data-target="resources" data-title="Resources">
+                <a href="#" class="tab-item" data-target="resources">
                     <i class="bi bi-folder2-open"></i>
                     <span>Resources</span>
                 </a>
-                <a href="#" class="tab-item" data-target="benefits" data-title="Benefits">
+                <a href="#" class="tab-item" data-target="benefits">
                     <i class="bi bi-star"></i>
                     <span>Benefits</span>
                 </a>
             </nav>
-
         </div>
     </div>
 
     <script>
-        function switchTab(targetViewId, customTitle) {
+        // CONFIGURATION: Replace with your n8n Production Webhook URL
+        const N8N_CONFIG = {
+            articles: 'https://YOUR-N8N-INSTANCE/webhook/get-articles',
+            jobs: 'https://YOUR-N8N-INSTANCE/webhook/get-jobs',
+            tvshows: 'https://YOUR-N8N-INSTANCE/webhook/get-tvshows',
+            resources: 'https://YOUR-N8N-INSTANCE/webhook/get-resources'
+        };
+
+        function switchTab(targetViewId) {
             document.querySelectorAll('.ios-tabbar .tab-item').forEach(t => {
-                if(t.getAttribute('data-target') === targetViewId) {
-                    t.classList.add('active');
-                } else {
-                    t.classList.remove('active');
-                }
+                t.classList.toggle('active', t.getAttribute('data-target') === targetViewId);
             });
 
             document.querySelectorAll('.app-view').forEach(v => {
                 v.classList.remove('active');
             });
+            
             const activeView = document.getElementById('view-' + targetViewId);
-            if(activeView) {
+            if (activeView) {
                 activeView.classList.add('active');
+                if (N8N_CONFIG[targetViewId]) {
+                    fetchTabContent(targetViewId);
+                }
             }
         }
 
-        // Tab click listeners
-        document.querySelectorAll('.ios-tabbar .tab-item').forEach(tab => {
-            tab.addEventListener('click', function(e) {
+        async function fetchTabContent(tabId) {
+            const viewElement = document.getElementById('view-' + tabId);
+            const container = viewElement ? viewElement.querySelector('.data-container') : null;
+            if (!container) return;
+
+            container.innerHTML = `
+                <div class="text-center py-4">
+                    <div class="spinner-border spinner-border-sm text-warning" role="status"></div>
+                    <p class="small text-muted mt-2">Loading latest content...</p>
+                </div>
+            `;
+
+            try {
+                const response = await fetch(N8N_CONFIG[tabId]);
+                const responseData = await response.json();
+                
+                let items = [];
+                const data = Array.isArray(responseData) ? responseData[0] : responseData;
+
+                if (data && data.title && Array.isArray(data.title)) {
+                    items = data.title.map((title, index) => ({
+                        title: title,
+                        description: data.description ? data.description[index] : '',
+                        link: data.link ? data.link[index] : '#'
+                    }));
+                } else if (Array.isArray(responseData)) {
+                    items = responseData;
+                }
+
+                if (!items || items.length === 0) {
+                    container.innerHTML = `<p class="text-muted small text-center py-4">No content currently available.</p>`;
+                    return;
+                }
+
+                container.innerHTML = '';
+                items.forEach(item => {
+                    const cardHtml = `
+                        <div class="ios-card">
+                            <h6 class="fw-semibold mb-1 text-dark">${item.title || 'Untitled'}</h6>
+                            <p class="text-muted small mb-2">${item.description || ''}</p>
+                            <a href="${item.link || '#'}" target="_blank" class="text-orange small fw-semibold text-decoration-none" style="color: #f97316;">
+                                View Details <i class="bi bi-arrow-right"></i>
+                            </a>
+                        </div>
+                    `;
+                    container.insertAdjacentHTML('beforeend', cardHtml);
+                });
+
+            } catch (error) {
+                console.error(`Error loading ${tabId}:`, error);
+                container.innerHTML = `
+                    <div class="alert alert-light border small py-2 px-3 text-muted" role="alert">
+                        Unable to fetch live data. Please check your n8n workflow URL.
+                    </div>
+                `;
+            }
+        }
+
+        // Navigation listeners
+        document.querySelectorAll('.ios-tabbar .tab-item, .menu-item-link').forEach(item => {
+            item.addEventListener('click', function(e) {
                 e.preventDefault();
                 const target = this.getAttribute('data-target');
-                const title = this.getAttribute('data-title');
-                switchTab(target, title);
+                switchTab(target);
+                closeDrawer();
             });
         });
 
-        // Burger Menu Drawer functionality
+        // Drawer Controls
         const btnBurger = document.getElementById('btn-burger');
         const drawerOverlay = document.getElementById('drawer-overlay');
         const offcanvasDrawer = document.getElementById('offcanvas-drawer');
@@ -510,17 +491,7 @@
 
         btnBurger.addEventListener('click', openDrawer);
         drawerOverlay.addEventListener('click', closeDrawer);
-
-        // Menu item links inside drawer
-        document.querySelectorAll('.menu-item-link').forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                const target = this.getAttribute('data-target');
-                const title = this.getAttribute('data-title');
-                switchTab(target, title);
-                closeDrawer();
-            });
-        });
+        document.getElementById('btn-close-drawer').addEventListener('click', closeDrawer);
     </script>
 </body>
 </html>
