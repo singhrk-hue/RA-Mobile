@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title>Restaurant Association App</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #e2e8f0;
+            color: #1a1d20;
+            overscroll-behavior-x: none;
+            overscroll-behavior-y: none;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        .preview-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: radial-gradient(circle at center, #cbd5e1 0%, #94a3b8 100%);
+            padding: 20px;
+        }
+
+        .ios-device {
+            width: 100%;
+            max-width: 390px;
+            height: 844px;
+            background: #ffffff;
+            border-radius: 44px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2), 0 0 0 12px #334155;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* iOS Header Bar - Light Theme with larger prominent logo */
+        .ios-header {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            height: 74px;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1030;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 12px;
+        }
+
+        .header-logo img {
+            height: 52px;
+            width: auto;
+            object-fit: contain;
+            max-width: 210px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-search-icon {
+            background: #f1f5f9;
+            border: none;
+            color: #6366f1;
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-search-icon:active { background: #e2e8f0; }
+
+        .user-avatar-badge {
+            width: 34px;
+            height: 34px;
+            background-color: #f97316;
+            color: #ffffff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.75rem;
+            box-shadow: 0 2px 4px rgba(249, 115, 22, 0.3);
+        }
+
+        .btn-burger {
+            background: transparent;
+            border: none;
+            color: #0f172a;
+            font-size: 1.8rem;
+            cursor: pointer;
+            padding: 2px 4px;
+            border-radius: 6px;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-burger:active { opacity: 0.7; }
+
+        /* Main Scrollable Content Area */
+        .app-content {
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-top: calc(74px + 16px);
+            padding-bottom: calc(70px + 20px);
+            padding-left: 16px;
+            padding-right: 16px;
+            background-color: #f8fafc;
+        }
+
+        /* Views management */
+        .app-view {
+            display: none;
+            animation: fadeIn 0.25s ease-in-out;
+        }
+        .app-view.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* iOS Tab Bar - Light Theme with 6 items */
+        .ios-tabbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(0, 0, 0, 0.08);
+            height: 70px;
+            width: 100%;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            z-index: 1030;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 4px;
+        }
+
+        .tab-item {
+            color: #64748b;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            height: 100%;
+            font-size: 0.55rem;
+            font-weight: 500;
+            transition: color 0.2s;
+            text-align: center;
+        }
+        .tab-item i { font-size: 1.1rem; margin-bottom: 2px; }
+        .tab-item.active { color: #f97316; }
+        .tab-item:active { opacity: 0.7; }
+
+        /* Card components styling - Light Theme */
+        .ios-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 14px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        .badge-orange {
+            background-color: #fff7ed;
+            color: #f97316;
+            border: 1px solid #fed7aa;
+        }
+
+        /* Offcanvas Menu Drawer */
+        .drawer-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1040;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.25s ease;
+        }
+        .drawer-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .offcanvas-drawer {
+            position: absolute;
+            top: 0;
+            right: -280px;
+            width: 280px;
+            height: 100%;
+            background: #ffffff;
+            z-index: 1050;
+            box-shadow: -5px 0 25px rgba(0,0,0,0.15);
+            transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+            padding-top: 50px;
+        }
+        .offcanvas-drawer.show {
+            right: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="preview-wrapper">
+        <div class="ios-device">
+            
+            <header class="ios-header">
+                <div class="header-logo">
+                    <img src="https://g1.restaurantassociation.com/media/images/RA-Newsletter/May-26/RA-black-logo.png" alt="Restaurant Association" onerror="this.src='https://placehold.co/210x52/ffffff/f97316?text=Restaurant+Association';">
+                </div>
+                <div class="header-actions">
+                    <button class="btn-search-icon" aria-label="AI Search">
+                        <i class="bi bi-stars"></i>
+                    </button>
+                    <div class="user-avatar-badge" title="User KD">KD</div>
+                    <button class="btn-burger" id="btn-burger" aria-label="Open Menu">
+                        <i class="bi bi-list"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Drawer Overlay & Offcanvas Menu -->
+            <div class="drawer-overlay" id="drawer-overlay"></div>
+            <div class="offcanvas-drawer" id="offcanvas-drawer">
+                <div class="d-flex justify-content-between align-items-center px-4 pb-3 border-bottom">
+                    <span class="fw-bold text-dark" style="font-size: 1rem;">Navigation Menu</span>
+                    <button class="btn-close" id="btn-close-drawer" aria-label="Close"></button>
+                </div>
+                <div class="list-group list-group-flush py-2">
+                    <a href="#" class="list-group-item list-group-item-action border-0 py-3 px-4 menu-item-link" data-target="home" data-title="Home">
+                        <i class="bi bi-house-door me-3" style="color: #f97316;"></i> Home
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action border-0 py-3 px-4 menu-item-link" data-target="articles" data-title="Articles">
+                        <i class="bi bi-journal-richtext me-3 text-primary"></i> Articles
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action border-0 py-3 px-4 menu-item-link" data-target="tvshows" data-title="TV Shows">
+                        <i class="bi bi-tv me-3 text-danger"></i> TV Shows
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action border-0 py-3 px-4 menu-item-link" data-target="jobs" data-title="Jobs">
+                        <i class="bi bi-briefcase me-3 text-success"></i> Jobs
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action border-0 py-3 px-4 menu-item-link" data-target="resources" data-title="Resources">
+                        <i class="bi bi-folder2-open me-3 text-warning"></i> Resources
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action border-0 py-3 px-4 menu-item-link" data-target="benefits" data-title="Benefits">
+                        <i class="bi bi-star me-3 text-info"></i> Benefits
+                    </a>
+                </div>
+            </div>
+
+            <main class="app-content">
+                
+                <!-- Home View -->
+                <div id="view-home" class="app-view active">
+                    <div class="ios-card text-center py-4 bg-white border-0 shadow-sm">
+                        <div class="mb-2">
+                            <i class="bi bi-shop fs-1 p-3 rounded-circle d-inline-block" style="color: #f97316; background-color: #fff7ed;"></i>
+                        </div>
+                        <h5 class="fw-bold mb-1 text-dark">Restaurant Association</h5>
+                        <p class="text-muted small mb-3">Empowering restaurant operators, chefs, and industry professionals.</p>
+                        <span class="badge badge-orange px-3 py-1 rounded-pill">Official Member Portal</span>
+                    </div>
+
+                    <h6 class="text-secondary text-uppercase small fw-bold mb-2">Quick Navigation</h6>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <div class="ios-card text-center py-3 mb-0" style="cursor:pointer;" onclick="switchTab('articles', 'Articles')">
+                                <i class="bi bi-journal-text fs-3 text-primary mb-1 d-block"></i>
+                                <span class="small fw-semibold text-dark">Read Articles</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="ios-card text-center py-3 mb-0" style="cursor:pointer;" onclick="switchTab('tvshows', 'TV Shows')">
+                                <i class="bi bi-play-btn fs-3 text-danger mb-1 d-block"></i>
+                                <span class="small fw-semibold text-dark">Watch Shows</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ios-card">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <h6 class="mb-1 fw-semibold small text-dark">Latest Industry Bulletin</h6>
+                                <p class="text-muted x-small mb-0" style="font-size: 0.75rem;">New supply chain guidelines for Q3</p>
+                            </div>
+                            <span class="badge bg-success bg-opacity-10 text-success px-2 py-1" style="font-size: 0.7rem;">New</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Articles View -->
+                <div id="view-articles" class="app-view">
+                    <h6 class="fw-bold mb-3 text-dark">Industry Articles & News</h6>
+                    <div class="ios-card">
+                        <span class="badge badge-orange mb-2" style="font-size: 0.65rem;">Operations</span>
+                        <h6 class="fw-semibold mb-1 text-dark">Maximizing Patio Revenue During Peak Seasons</h6>
+                        <p class="text-muted small mb-2">Expert tips on layout adjustments and outdoor menu optimization.</p>
+                        <div class="text-orange small fw-semibold" style="font-size: 0.8rem; color: #f97316;">Read Full Article <i class="bi bi-arrow-right"></i></div>
+                    </div>
+                    <div class="ios-card">
+                        <span class="badge badge-orange mb-2" style="font-size: 0.65rem;">Technology</span>
+                        <h6 class="fw-semibold mb-1 text-dark">Contactless Ordering & POS Integration Trends</h6>
+                        <p class="text-muted small mb-2">How automated table-side ordering improves table turnover rates.</p>
+                        <div class="text-orange small fw-semibold" style="font-size: 0.8rem; color: #f97316;">Read Full Article <i class="bi bi-arrow-right"></i></div>
+                    </div>
+                </div>
+
+                <!-- TV Shows View -->
+                <div id="view-tvshows" class="app-view">
+                    <h6 class="fw-bold mb-3 text-dark">Restaurant TV Shows & Series</h6>
+                    <div class="ios-card">
+                        <div class="position-relative bg-dark rounded-3 p-4 text-center text-white mb-2" style="background: linear-gradient(135deg, #1e293b, #0f172a);">
+                            <i class="bi bi-play-circle-fill text-danger fs-1 mb-2 d-block"></i>
+                            <h6 class="fw-semibold mb-1">Behind the Kitchen Door (Ep. 12)</h6>
+                            <p class="text-white-50 x-small mb-0" style="font-size: 0.75rem;">Mastering high-pressure service rushes</p>
+                        </div>
+                        <button class="btn btn-sm btn-dark w-100 py-1" style="font-size: 0.8rem;">Watch Episode</button>
+                    </div>
+                    <div class="ios-card">
+                        <div class="position-relative bg-dark rounded-3 p-4 text-center text-white mb-2" style="background: linear-gradient(135deg, #1e293b, #0f172a);">
+                            <i class="bi bi-play-circle-fill text-danger fs-1 mb-2 d-block"></i>
+                            <h6 class="fw-semibold mb-1">Chef Spotlights: Innovators</h6>
+                            <p class="text-white-50 x-small mb-0" style="font-size: 0.75rem;">Sustainable sourcing in modern bistros</p>
+                        </div>
+                        <button class="btn btn-sm btn-dark w-100 py-1" style="font-size: 0.8rem;">Watch Episode</button>
+                    </div>
+                </div>
+
+                <!-- Jobs View -->
+                <div id="view-jobs" class="app-view">
+                    <h6 class="fw-bold mb-3 text-dark">Hospitality Job Board</h6>
+                    <div class="ios-card">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <h6 class="fw-semibold mb-0 small text-dark">Executive Head Chef</h6>
+                            <span class="badge bg-success bg-opacity-10 text-success" style="font-size: 0.65rem;">Full-Time</span>
+                        </div>
+                        <p class="text-muted small mb-2">Upscale Bistro • Downtown Area • Competitive Salary</p>
+                        <button class="btn btn-sm btn-outline-dark w-100 py-1" style="font-size: 0.8rem;">Apply Now</button>
+                    </div>
+                    <div class="ios-card">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <h6 class="fw-semibold mb-0 small text-dark">General Restaurant Manager</h6>
+                            <span class="badge bg-success bg-opacity-10 text-success" style="font-size: 0.65rem;">Full-Time</span>
+                        </div>
+                        <p class="text-muted small mb-2">Hospitality Group • Metro District</p>
+                        <button class="btn btn-sm btn-outline-dark w-100 py-1" style="font-size: 0.8rem;">Apply Now</button>
+                    </div>
+                </div>
+
+                <!-- Resources View -->
+                <div id="view-resources" class="app-view">
+                    <h6 class="fw-bold mb-3 text-dark">Operational Toolkits</h6>
+                    <div class="ios-card">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <h6 class="fw-semibold mb-0 small text-dark">Food Safety & Compliance Guide</h6>
+                            <span class="badge badge-orange" style="font-size: 0.65rem;">PDF</span>
+                        </div>
+                        <p class="text-muted small mb-2">Download checklists for kitchen sanitation and HACCP standards.</p>
+                        <button class="btn btn-sm btn-outline-dark w-100 py-1" style="font-size: 0.8rem;">Download PDF</button>
+                    </div>
+                    <div class="ios-card">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <h6 class="fw-semibold mb-0 small text-dark">Staff Scheduling Template</h6>
+                            <span class="badge bg-secondary bg-opacity-10 text-secondary" style="font-size: 0.65rem;">Excel</span>
+                        </div>
+                        <p class="text-muted small mb-2">Manage labor cost ratios and weekly shift rotations seamlessly.</p>
+                        <button class="btn btn-sm btn-outline-secondary w-100 py-1" style="font-size: 0.8rem;">Download Spreadsheet</button>
+                    </div>
+                </div>
+
+                <!-- Benefits View -->
+                <div id="view-benefits" class="app-view">
+                    <div class="text-center py-2 mb-3">
+                        <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex p-3 mb-2">
+                            <i class="bi bi-award fs-2 text-warning"></i>
+                        </div>
+                        <h6 class="fw-bold mb-1 text-dark">Member Benefits</h6>
+                        <p class="text-muted small mb-0">Exclusive savings and perks for association members</p>
+                    </div>
+                    <div class="ios-card">
+                        <div class="d-flex justify-content-between py-2 border-bottom border-light" style="font-size: 0.85rem;">
+                            <span class="text-dark">Supply Chain Discounts</span>
+                            <span class="fw-semibold" style="color: #f97316;">Save up to 15%</span>
+                        </div>
+                        <div class="d-flex justify-content-between py-2 border-bottom border-light" style="font-size: 0.85rem;">
+                            <span class="text-dark">Legal & HR Advisory Helpline</span>
+                            <span class="text-success fw-semibold">Free Access</span>
+                        </div>
+                        <div class="d-flex justify-content-between py-2" style="font-size: 0.85rem;">
+                            <span class="text-dark">Annual Convention Passes</span>
+                            <span class="fw-semibold" style="color: #f97316;">VIP Status</span>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+
+            <nav class="ios-tabbar">
+                <a href="#" class="tab-item active" data-target="home" data-title="Home">
+                    <i class="bi bi-house-door-fill"></i>
+                    <span>Home</span>
+                </a>
+                <a href="#" class="tab-item" data-target="articles" data-title="Articles">
+                    <i class="bi bi-journal-richtext"></i>
+                    <span>Articles</span>
+                </a>
+                <a href="#" class="tab-item" data-target="tvshows" data-title="TV Shows">
+                    <i class="bi bi-tv"></i>
+                    <span>TV Shows</span>
+                </a>
+                <a href="#" class="tab-item" data-target="jobs" data-title="Jobs">
+                    <i class="bi bi-briefcase"></i>
+                    <span>Jobs</span>
+                </a>
+                <a href="#" class="tab-item" data-target="resources" data-title="Resources">
+                    <i class="bi bi-folder2-open"></i>
+                    <span>Resources</span>
+                </a>
+                <a href="#" class="tab-item" data-target="benefits" data-title="Benefits">
+                    <i class="bi bi-star"></i>
+                    <span>Benefits</span>
+                </a>
+            </nav>
+
+        </div>
+    </div>
+
+    <script>
+        function switchTab(targetViewId, customTitle) {
+            document.querySelectorAll('.ios-tabbar .tab-item').forEach(t => {
+                if(t.getAttribute('data-target') === targetViewId) {
+                    t.classList.add('active');
+                } else {
+                    t.classList.remove('active');
+                }
+            });
+
+            document.querySelectorAll('.app-view').forEach(v => {
+                v.classList.remove('active');
+            });
+            const activeView = document.getElementById('view-' + targetViewId);
+            if(activeView) {
+                activeView.classList.add('active');
+            }
+        }
+
+        // Tab click listeners
+        document.querySelectorAll('.ios-tabbar .tab-item').forEach(tab => {
+            tab.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = this.getAttribute('data-target');
+                const title = this.getAttribute('data-title');
+                switchTab(target, title);
+            });
+        });
+
+        // Burger Menu Drawer functionality
+        const btnBurger = document.getElementById('btn-burger');
+        const drawerOverlay = document.getElementById('drawer-overlay');
+        const offcanvasDrawer = document.getElementById('offcanvas-drawer');
+
+        function openDrawer() {
+            drawerOverlay.classList.add('show');
+            offcanvasDrawer.classList.add('show');
+        }
+
+        function closeDrawer() {
+            drawerOverlay.classList.remove('show');
+            offcanvasDrawer.classList.remove('show');
+        }
+
+        btnBurger.addEventListener('click', openDrawer);
+        drawerOverlay.addEventListener('click', closeDrawer);
+
+        // Menu item links inside drawer
+        document.querySelectorAll('.menu-item-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = this.getAttribute('data-target');
+                const title = this.getAttribute('data-title');
+                switchTab(target, title);
+                closeDrawer();
+            });
+        });
+    </script>
+</body>
+</html>
