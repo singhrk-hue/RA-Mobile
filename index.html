@@ -424,19 +424,34 @@
             -webkit-overflow-scrolling: touch;
             -ms-overflow-style: none;  
             scrollbar-width: none;
+            
+            /* CRITICAL FIX: Stops the detail view from blocking clicks when closed */
+            visibility: hidden;
+            pointer-events: none;
         }
         .article-detail-view::-webkit-scrollbar { display: none; }
+        
         .article-detail-view.show {
             transform: translateX(0);
+            visibility: visible;
+            pointer-events: auto;
         }
         
         .ad-hero {
             position: relative;
             width: 100%;
             height: 380px;
-            background-size: cover;
-            background-position: top center;
             background-color: #ddd;
+        }
+        /* New explicit image tag to prevent URL breaking */
+        .ad-hero img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
         }
         .ad-nav {
             position: absolute;
@@ -622,9 +637,12 @@
                 </a>
             </nav>
 
-            <!-- NATIVE ARTICLE DETAIL VIEW (REPLACED IFRAME) -->
+            <!-- NATIVE ARTICLE DETAIL VIEW -->
             <div class="article-detail-view" id="article-detail-view">
-                <div class="ad-hero" id="ad-hero-bg" style="background-image: url('');">
+                
+                <!-- FIX: Use a real image tag instead of CSS background -->
+                <div class="ad-hero">
+                    <img id="ad-hero-img" src="" alt="Hero Image">
                     <div class="ad-nav">
                         <button class="ad-btn" onclick="closeNativeArticle()">
                             <i class="bi bi-chevron-left"></i>
@@ -692,7 +710,7 @@
             }
         }
 
-        // Helper function to build a standard horizontal card (Updated with new onclick)
+        // Helper function to build a standard horizontal card 
         function createCardHtml(item) {
             let badgeClass = "tag-news";
             let badgeText = "ARTICLE";
@@ -827,13 +845,13 @@
         function openNativeArticle(encodedItem) {
             const item = JSON.parse(decodeURIComponent(encodedItem));
             
-            // 1. FIX THE IMAGE: Ensure the URL is properly quoted for CSS backgrounds
+            // 1. FIX: Set image directly to the HTML tag to prevent CSS breaking
             const imageUrl = item.image || 'https://via.placeholder.com/600x400?text=No+Image';
-            document.getElementById('ad-hero-bg').style.backgroundImage = "url('" + imageUrl + "')";
+            document.getElementById('ad-hero-img').src = imageUrl;
             
             document.getElementById('ad-title').innerText = item.title || 'Untitled';
             
-            // Set Tag and Date
+            // Set Tag
             let badgeClass = "tag-news";
             let badgeText = "NEWS";
             if (item.link && (item.link.includes('/blog/') || item.link.includes('/blogs/'))) {
@@ -844,14 +862,18 @@
             tagEl.className = `ad-tag ${badgeClass}`;
             tagEl.innerText = badgeText;
             
-            // 2. READ WHOLE ARTICLE: Remove the web button and prepare for full content
-            // The app will look for 'item.content' (which n8n needs to send). 
-            // If n8n hasn't sent it yet, it falls back to the short description.
-            const fullArticleText = item.content || item.description || 'Full article text not available.';
+            // 2. FIX: Simulated full article body until n8n is updated
+            // Checks for item.content first. If it's missing, it prints a helpful placeholder!
+            const simulatedArticleBody = item.content || `
+                <p style="font-size: 1.1rem; color: #111; font-weight: 600;">${item.description || 'Full article text not available.'}</p>
+                <p><i>(This is a visual placeholder for the full article body. Right now, your n8n workflow is only extracting the short description from the website.)</i></p>
+                <p>To make the real text appear here, you will need to update your <b>Code in JavaScript</b> node in n8n to scrape the full article content paragraphs and pass them into a new <code>content</code> field in the JSON payload.</p>
+                <p>Once n8n sends that 'content' field, this app will automatically render your full article right here!</p>
+            `;
             
             document.getElementById('ad-body').innerHTML = `
-                <div style="font-weight: 400; line-height: 1.7;">
-                    ${fullArticleText}
+                <div style="font-weight: 400; line-height: 1.7; color: #444;">
+                    ${simulatedArticleBody}
                 </div>
             `;
             
