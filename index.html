@@ -189,6 +189,7 @@
             padding: 14px;
             margin-bottom: 14px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+            overflow: hidden;
         }
 
         .badge-orange {
@@ -425,11 +426,13 @@
                 let items = [];
                 const data = Array.isArray(responseData) ? responseData[0] : responseData;
 
+                // Handle both older array formats and the new clean n8n Code node output
                 if (data && data.title && Array.isArray(data.title)) {
                     items = data.title.map((title, index) => ({
                         title: title,
                         description: data.description ? data.description[index] : '',
-                        link: data.link ? data.link[index] : '#'
+                        link: data.link ? data.link[index] : '#',
+                        image: data.image ? data.image[index] : ''
                     }));
                 } else if (Array.isArray(responseData)) {
                     items = responseData;
@@ -442,11 +445,15 @@
 
                 container.innerHTML = '';
                 items.forEach(item => {
+                    // Check if an image exists for this article, if so, build the image HTML
+                    const imageHtml = item.image ? `<img src="${item.image}" alt="Article Image" style="width: 100%; height: 160px; object-fit: cover; border-radius: 8px; margin-bottom: 12px; display: block;">` : '';
+
                     const cardHtml = `
                         <div class="ios-card">
+                            ${imageHtml}
                             <h6 class="fw-semibold mb-1 text-dark">${item.title || 'Untitled'}</h6>
                             <p class="text-muted small mb-2">${item.description || ''}</p>
-                            <a href="${item.link || '#'}" target="_blank" class="text-orange small fw-semibold text-decoration-none" style="color: #f97316;">
+                            <a href="${item.link || '#'}" target="_blank" rel="noopener noreferrer" class="text-orange small fw-semibold text-decoration-none" style="color: #f97316;">
                                 View Details <i class="bi bi-arrow-right"></i>
                             </a>
                         </div>
