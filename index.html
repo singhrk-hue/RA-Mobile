@@ -488,6 +488,8 @@
             padding: 4px 10px;
             border-radius: 6px;
         }
+        .tag-backoffice { background: #3f7b82; } 
+        
         .ad-date {
             font-size: 0.75rem;
             color: #666;
@@ -825,14 +827,16 @@
         function openNativeArticle(encodedItem) {
             const item = JSON.parse(decodeURIComponent(encodedItem));
             
-            // Populate the Native View with data
-            document.getElementById('ad-hero-bg').style.backgroundImage = `url('${item.image || 'https://via.placeholder.com/600x400?text=No+Image'}')`;
+            // 1. FIX THE IMAGE: Ensure the URL is properly quoted for CSS backgrounds
+            const imageUrl = item.image || 'https://via.placeholder.com/600x400?text=No+Image';
+            document.getElementById('ad-hero-bg').style.backgroundImage = "url('" + imageUrl + "')";
+            
             document.getElementById('ad-title').innerText = item.title || 'Untitled';
             
             // Set Tag and Date
             let badgeClass = "tag-news";
             let badgeText = "NEWS";
-            if (item.link.includes('/blog/') || item.link.includes('/blogs/')) {
+            if (item.link && (item.link.includes('/blog/') || item.link.includes('/blogs/'))) {
                 badgeClass = "tag-backoffice";
                 badgeText = "BLOG";
             }
@@ -840,11 +844,15 @@
             tagEl.className = `ad-tag ${badgeClass}`;
             tagEl.innerText = badgeText;
             
-            // Populate Body 
+            // 2. READ WHOLE ARTICLE: Remove the web button and prepare for full content
+            // The app will look for 'item.content' (which n8n needs to send). 
+            // If n8n hasn't sent it yet, it falls back to the short description.
+            const fullArticleText = item.content || item.description || 'Full article text not available.';
+            
             document.getElementById('ad-body').innerHTML = `
-                <p>${item.description || 'No description available.'}</p>
-                <br>
-                <a href="${item.link}" target="_blank" class="btn btn-outline-primary w-100 rounded-pill mt-3">Read Full Article on Web</a>
+                <div style="font-weight: 400; line-height: 1.7;">
+                    ${fullArticleText}
+                </div>
             `;
             
             // Show the View
