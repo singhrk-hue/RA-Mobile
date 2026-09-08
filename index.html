@@ -120,12 +120,10 @@
             padding-right: 16px;
             padding-top: 16px;
             
-            /* NEW: Hide scrollbar for a native mobile look */
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
+            /* Native mobile scrollbar hiding */
+            -ms-overflow-style: none;  
+            scrollbar-width: none;  
         }
-
-        /* NEW: Hide scrollbar for Chrome, Safari and Opera */
         .app-content::-webkit-scrollbar {
             display: none;
         }
@@ -143,7 +141,126 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* --- NEW HORIZONTAL CARDS --- */
+        /* --- HERO CARD (Home Tab Only) --- */
+        .hero-card {
+            position: relative;
+            width: 100%;
+            height: 240px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            background: #111; 
+        }
+        .hero-bg-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .hero-gradient {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.85) 100%);
+        }
+        .hero-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            z-index: 2;
+        }
+        .hero-title {
+            font-family: 'Merriweather', serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            line-height: 1.3;
+            color: #ffffff;
+            margin-bottom: 6px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .hero-desc {
+            font-size: 0.8rem;
+            color: #f1f5f9;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin: 0;
+        }
+        .hero-tag {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            z-index: 2;
+        }
+
+        /* --- FILTER PILLS --- */
+        .filter-scroll-container {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            margin-bottom: 16px;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .filter-scroll-container::-webkit-scrollbar {
+            display: none;
+        }
+        .filter-pill {
+            background: #ffffff;
+            border: 1px solid #f05637;
+            color: #f05637;
+            border-radius: 20px;
+            padding: 6px 18px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .filter-pill.active {
+            background: #f05637;
+            color: #ffffff;
+        }
+
+        /* --- SECTION HEADER --- */
+        .section-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .section-header-title {
+            font-family: 'Merriweather', serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #111;
+            margin: 0;
+        }
+        .section-header-link {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #0b5ed7;
+            text-decoration: none;
+        }
+
+        /* --- STANDARD HORIZONTAL CARDS --- */
         .news-card {
             display: flex;
             background: #ffffff;
@@ -444,8 +561,7 @@
     </div>
 
     <script>
-        // CONFIGURATION: Map URLs for tabs. 
-        // Note: Home, News, and Blogs all point to the working 'get-articles' master feed!
+        // CONFIGURATION
         const N8N_CONFIG = {
             home: 'https://sa1.altametrics.com/webhook/get-articles',
             news: 'https://sa1.altametrics.com/webhook/get-articles',
@@ -480,6 +596,37 @@
             }
         }
 
+        // Helper function to build a standard horizontal card
+        function createCardHtml(item) {
+            let badgeClass = "tag-news";
+            let badgeText = "ARTICLE";
+            
+            if (item.link.includes('/news/')) {
+                badgeClass = "tag-news";
+                badgeText = "NEWS";
+            } else if (item.link.includes('/blog/') || item.link.includes('/blogs/')) {
+                badgeClass = "tag-backoffice";
+                badgeText = "BLOG";
+            }
+            
+            const dateText = "Recent"; 
+            const imageHtml = item.image ? `<img src="${item.image}" alt="Image" class="news-card-image">` : '';
+
+            return `
+                <div class="news-card" onclick="openInAppBrowser('${item.link}')">
+                    <div class="news-card-content">
+                        <div class="news-meta">
+                            <span class="news-tag ${badgeClass}">${badgeText}</span>
+                            <span class="news-date">${dateText}</span>
+                        </div>
+                        <h3 class="news-title">${item.title || 'Untitled'}</h3>
+                        <p class="news-desc">${item.description || ''}</p>
+                    </div>
+                    ${imageHtml}
+                </div>
+            `;
+        }
+
         async function fetchTabContent(tabId) {
             const viewElement = document.getElementById('view-' + tabId);
             const container = viewElement ? viewElement.querySelector('.data-container') : null;
@@ -512,10 +659,8 @@
 
                 // --- THE MAGIC FILTER ---
                 if (tabId === 'news') {
-                    // Only keep articles where the URL contains '/news/'
                     items = items.filter(item => item.link.includes('/news/'));
                 } else if (tabId === 'blogs') {
-                    // Only keep articles where the URL contains '/blog/' or '/blogs/'
                     items = items.filter(item => item.link.includes('/blog/') || item.link.includes('/blogs/'));
                 }
 
@@ -525,39 +670,54 @@
                 }
 
                 container.innerHTML = '';
-                items.forEach((item, index) => {
+                
+                // --- HOME TAB EXCLUSIVE LAYOUT (HERO + PILLS) ---
+                if (tabId === 'home' && items.length > 0) {
+                    const heroItem = items[0];
                     
-                    // --- DYNAMIC TAG GENERATION ---
-                    let badgeClass = "tag-news";
-                    let badgeText = "ARTICLE";
+                    let heroBadgeClass = "tag-news";
+                    let heroBadgeText = "ARTICLE";
+                    if (heroItem.link.includes('/news/')) { heroBadgeClass = "tag-news"; heroBadgeText = "NEWS"; } 
+                    else if (heroItem.link.includes('/blog/') || heroItem.link.includes('/blogs/')) { heroBadgeClass = "tag-backoffice"; heroBadgeText = "BLOG"; }
                     
-                    if (item.link.includes('/news/')) {
-                        badgeClass = "tag-news";
-                        badgeText = "NEWS";
-                    } else if (item.link.includes('/blog/') || item.link.includes('/blogs/')) {
-                        badgeClass = "tag-backoffice";
-                        badgeText = "BLOG";
-                    }
-                    
-                    const dateText = "Recent"; // Placeholder until n8n extracts real dates
+                    const heroImageHtml = heroItem.image ? heroItem.image : 'https://via.placeholder.com/400x240?text=No+Image';
 
-                    const imageHtml = item.image ? `<img src="${item.image}" alt="Image" class="news-card-image">` : '';
-
-                    const cardHtml = `
-                        <div class="news-card" onclick="openInAppBrowser('${item.link}')">
-                            <div class="news-card-content">
-                                <div class="news-meta">
-                                    <span class="news-tag ${badgeClass}">${badgeText}</span>
-                                    <span class="news-date">${dateText}</span>
-                                </div>
-                                <h3 class="news-title">${item.title || 'Untitled'}</h3>
-                                <p class="news-desc">${item.description || ''}</p>
+                    const homeHeaderHtml = `
+                        <div class="hero-card" onclick="openInAppBrowser('${heroItem.link}')">
+                            <img src="${heroImageHtml}" class="hero-bg-image" alt="Hero Image">
+                            <div class="hero-gradient"></div>
+                            <span class="news-tag ${heroBadgeClass} hero-tag">${heroBadgeText}</span>
+                            <div class="hero-content">
+                                <h3 class="hero-title">${heroItem.title || 'Untitled'}</h3>
+                                <p class="hero-desc">${heroItem.description || ''}</p>
                             </div>
-                            ${imageHtml}
+                        </div>
+
+                        <div class="filter-scroll-container">
+                            <div class="filter-pill active">ALL</div>
+                            <div class="filter-pill" onclick="switchTab('news')">NEWS</div>
+                            <div class="filter-pill" onclick="switchTab('blogs')">BLOG</div>
+                            <div class="filter-pill" onclick="openDrawer()">SHOWS</div>
+                        </div>
+
+                        <div class="section-header-row">
+                            <h2 class="section-header-title">Latest Insights</h2>
+                            <a href="javascript:void(0);" class="section-header-link" onclick="switchTab('news')">View All</a>
                         </div>
                     `;
-                    container.insertAdjacentHTML('beforeend', cardHtml);
-                });
+                    container.insertAdjacentHTML('beforeend', homeHeaderHtml);
+
+                    // Render the rest of the items as standard cards
+                    items.slice(1).forEach(item => {
+                        container.insertAdjacentHTML('beforeend', createCardHtml(item));
+                    });
+                } 
+                // --- NEWS, BLOGS, JOBS TABS (STANDARD CARDS ONLY) ---
+                else {
+                    items.forEach(item => {
+                        container.insertAdjacentHTML('beforeend', createCardHtml(item));
+                    });
+                }
 
             } catch (error) {
                 console.error(`Error loading ${tabId}:`, error);
