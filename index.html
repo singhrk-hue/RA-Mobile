@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+\<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -407,7 +407,7 @@
             right: 0;
         }
 
-        /* --- NATIVE ARTICLE DETAIL VIEW --- */
+        /* --- FIXED: NATIVE ARTICLE DETAIL VIEW --- */
         .article-detail-view {
             position: absolute;
             top: 0;
@@ -416,8 +416,10 @@
             height: 100%;
             background: #f6f4ed; 
             z-index: 2000;
-            display: flex;
-            flex-direction: column;
+            
+            /* FIX 1: Display Block stops the text from spilling out the bottom */
+            display: block; 
+            
             transform: translateX(100%);
             transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             overflow-y: auto;
@@ -425,9 +427,11 @@
             -ms-overflow-style: none;  
             scrollbar-width: none;
             
-            /* CRITICAL FIX: Stops the detail view from blocking clicks when closed */
+            /* FIX 2: Fully hides the view so footer tabs remain 100% clickable */
             visibility: hidden;
             pointer-events: none;
+            opacity: 0;
+            padding-bottom: 40px; /* Gives scrolling space at the very bottom */
         }
         .article-detail-view::-webkit-scrollbar { display: none; }
         
@@ -435,15 +439,15 @@
             transform: translateX(0);
             visibility: visible;
             pointer-events: auto;
+            opacity: 1;
         }
         
         .ad-hero {
             position: relative;
             width: 100%;
             height: 380px;
-            background-color: #ddd;
+            background-color: #e2e8f0;
         }
-        /* New explicit image tag to prevent URL breaking */
         .ad-hero img {
             width: 100%;
             height: 100%;
@@ -480,13 +484,13 @@
         
         .ad-content-card {
             background: #ffffff;
-            margin: -50px 16px 40px 16px;
+            margin: -50px 16px 20px 16px;
             border-radius: 12px;
             padding: 24px;
             position: relative;
             z-index: 5;
             box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-            min-height: 400px;
+            /* FIX 3: Removed min-height so the card naturally hugs the text perfectly */
         }
         .ad-meta-row {
             display: flex;
@@ -537,10 +541,10 @@
             font-weight: 500;
         }
         .ad-body {
-            font-size: 1rem;
-            color: #111;
-            line-height: 1.6;
-            font-weight: 500;
+            font-size: 1.05rem;
+            color: #222;
+            line-height: 1.7;
+            font-weight: 400;
         }
         .ad-body p { margin-bottom: 16px; }
 
@@ -640,7 +644,6 @@
             <!-- NATIVE ARTICLE DETAIL VIEW -->
             <div class="article-detail-view" id="article-detail-view">
                 
-                <!-- FIX: Use a real image tag instead of CSS background -->
                 <div class="ad-hero">
                     <img id="ad-hero-img" src="" alt="Hero Image">
                     <div class="ad-nav">
@@ -710,7 +713,7 @@
             }
         }
 
-        // Helper function to build a standard horizontal card 
+        // Helper function to build a standard horizontal card
         function createCardHtml(item) {
             let badgeClass = "tag-news";
             let badgeText = "ARTICLE";
@@ -728,7 +731,7 @@
             const encodedItem = encodeURIComponent(JSON.stringify(item));
 
             return `
-                <div class="news-card" data-item="${encodedItem}" onclick="openNativeArticle(this.dataset.item)">
+                <div class="news-card" data-item="${encodedItem}" onclick="openNativeArticle(this.getAttribute('data-item'))">
                     <div class="news-card-content">
                         <div class="news-meta">
                             <span class="news-tag ${badgeClass}">${badgeText}</span>
@@ -793,11 +796,11 @@
                     if (heroItem.link.includes('/news/')) { heroBadgeClass = "tag-news"; heroBadgeText = "NEWS"; } 
                     else if (heroItem.link.includes('/blog/') || heroItem.link.includes('/blogs/')) { heroBadgeClass = "tag-backoffice"; heroBadgeText = "BLOG"; }
                     
-                    const heroImageHtml = heroItem.image ? heroItem.image : 'https://via.placeholder.com/400x240?text=No+Image';
+                    const heroImageHtml = heroItem.image ? heroItem.image : 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?q=80&w=1000&auto=format&fit=crop';
                     const encodedHeroItem = encodeURIComponent(JSON.stringify(heroItem));
 
                     const homeHeaderHtml = `
-                        <div class="hero-card" data-item="${encodedHeroItem}" onclick="openNativeArticle(this.dataset.item)">
+                        <div class="hero-card" data-item="${encodedHeroItem}" onclick="openNativeArticle(this.getAttribute('data-item'))">
                             <img src="${heroImageHtml}" class="hero-bg-image" alt="Hero Image">
                             <div class="hero-gradient"></div>
                             <span class="news-tag ${heroBadgeClass} hero-tag">${heroBadgeText}</span>
@@ -841,17 +844,20 @@
             }
         }
 
-        // --- NEW: NATIVE ARTICLE VIEW LOGIC ---
+        // --- FIXED: NATIVE ARTICLE VIEW LOGIC ---
         function openNativeArticle(encodedItem) {
+            if (!encodedItem) return;
             const item = JSON.parse(decodeURIComponent(encodedItem));
             
-            // 1. FIX: Set image directly to the HTML tag to prevent CSS breaking
-            const imageUrl = item.image || 'https://via.placeholder.com/600x400?text=No+Image';
-            document.getElementById('ad-hero-img').src = imageUrl;
+            // 1. Image Fix: Fallback to a real stock image if missing, and safe error handling
+            const defaultImg = 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?q=80&w=1000&auto=format&fit=crop';
+            const imgEl = document.getElementById('ad-hero-img');
+            imgEl.src = (item.image && item.image.trim() !== '') ? item.image : defaultImg;
+            imgEl.onerror = function() { this.src = defaultImg; }; // Failsafe for broken URLs
             
+            // 2. Data Passing Fix: Data is cleanly passed using .getAttribute
             document.getElementById('ad-title').innerText = item.title || 'Untitled';
             
-            // Set Tag
             let badgeClass = "tag-news";
             let badgeText = "NEWS";
             if (item.link && (item.link.includes('/blog/') || item.link.includes('/blogs/'))) {
@@ -862,22 +868,13 @@
             tagEl.className = `ad-tag ${badgeClass}`;
             tagEl.innerText = badgeText;
             
-            // 2. FIX: Simulated full article body until n8n is updated
-            // Checks for item.content first. If it's missing, it prints a helpful placeholder!
-            const simulatedArticleBody = item.content || `
-                <p style="font-size: 1.1rem; color: #111; font-weight: 600;">${item.description || 'Full article text not available.'}</p>
-                <p><i>(This is a visual placeholder for the full article body. Right now, your n8n workflow is only extracting the short description from the website.)</i></p>
-                <p>To make the real text appear here, you will need to update your <b>Code in JavaScript</b> node in n8n to scrape the full article content paragraphs and pass them into a new <code>content</code> field in the JSON payload.</p>
-                <p>Once n8n sends that 'content' field, this app will automatically render your full article right here!</p>
-            `;
+            // 3. Clean Text Body: Removes the confusing placeholder text
+            const cleanContent = item.content || item.description || 'Article text is currently unavailable.';
             
             document.getElementById('ad-body').innerHTML = `
-                <div style="font-weight: 400; line-height: 1.7; color: #444;">
-                    ${simulatedArticleBody}
-                </div>
+                <p>${cleanContent}</p>
             `;
             
-            // Show the View
             document.getElementById('article-detail-view').classList.add('show');
         }
 
