@@ -9,7 +9,7 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@700&display=swap" rel="stylesheet">
 
     <style>
         body {
@@ -36,7 +36,7 @@
             width: 100%;
             max-width: 390px;
             height: 844px;
-            background: #ffffff;
+            background: #f6f4ed; /* Warm beige background from mockup */
             border-radius: 44px;
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2), 0 0 0 12px #334155;
             overflow: hidden;
@@ -45,13 +45,10 @@
             flex-direction: column;
         }
 
-        /* Header Bar */
+        /* --- NEW HEADER (Clean, no avatar/burger) --- */
         .ios-header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-            height: 72px;
+            background: #f6f4ed;
+            height: 70px;
             width: 100%;
             position: absolute;
             top: 0;
@@ -60,63 +57,57 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 12px;
+            padding: 0 20px;
         }
-
         .header-logo img {
-            height: 44px;
+            height: 40px;
             width: auto;
             object-fit: contain;
-            max-width: 180px;
         }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
         .btn-search-icon {
-            background: #f1f5f9;
-            border: none;
-            color: #6366f1;
-            width: 34px;
-            height: 34px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .user-avatar-badge {
-            width: 34px;
-            height: 34px;
-            background-color: #f97316;
-            color: #ffffff;
+            background: #ffffff;
+            border: 1px solid #eaeaea;
+            color: #0b5ed7; /* Blue search icon */
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 600;
-            font-size: 0.75rem;
-            box-shadow: 0 2px 4px rgba(249, 115, 22, 0.3);
+            font-size: 1.1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            cursor: pointer;
         }
 
-        .btn-burger {
-            background: transparent;
-            border: none;
-            color: #0f172a;
-            font-size: 1.8rem;
-            cursor: pointer;
-            padding: 2px 4px;
-            border-radius: 6px;
-            line-height: 1;
+        /* --- BREAKING TICKER --- */
+        .breaking-ticker {
+            background: #f6f4ed;
+            border-top: 1px solid #e2ded5;
+            border-bottom: 1px solid #e2ded5;
+            padding: 8px 16px;
             display: flex;
             align-items: center;
-            justify-content: center;
+            margin-top: 70px; /* Offset for absolute header */
+        }
+        .breaking-badge {
+            border: 1px solid #d9534f;
+            color: #d9534f;
+            background: rgba(217, 83, 79, 0.1);
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+            margin-right: 12px;
+        }
+        .breaking-dot {
+            width: 6px;
+            height: 6px;
+            background: #d9534f;
+            border-radius: 50%;
         }
 
         /* Main Content */
@@ -124,11 +115,10 @@
             flex: 1;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
-            padding-top: calc(72px + 16px);
             padding-bottom: calc(70px + 20px);
             padding-left: 16px;
             padding-right: 16px;
-            background-color: #f8fafc;
+            padding-top: 16px;
         }
 
         .app-view {
@@ -144,12 +134,77 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Tab Bar */
+        /* --- NEW HORIZONTAL CARDS --- */
+        .news-card {
+            display: flex;
+            background: #ffffff;
+            border: 1px solid #e8e5dc;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+            gap: 12px;
+            cursor: pointer;
+        }
+        .news-card-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .news-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .news-tag {
+            background: #f05637; /* Default Orange */
+            color: #ffffff;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        .tag-payroll { background: #4caf50; } /* Green */
+        .tag-backoffice { background: #3f7b82; } /* Teal */
+        
+        .news-date {
+            font-size: 0.65rem;
+            color: #666;
+            font-weight: 600;
+        }
+        .news-title {
+            font-family: 'Merriweather', serif; /* Serif font for headings */
+            font-size: 0.95rem;
+            font-weight: 700;
+            line-height: 1.3;
+            color: #111;
+            margin-bottom: 6px;
+        }
+        .news-desc {
+            font-size: 0.75rem;
+            color: #666;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin: 0;
+        }
+        .news-card-image {
+            width: 110px;
+            height: 110px;
+            border-radius: 8px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        /* --- NEW TAB BAR (Footer) --- */
         .ios-tabbar {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(0, 0, 0, 0.08);
+            background: #ffffff;
+            border-top: 1px solid #e2e8f0;
             height: 70px;
             width: 100%;
             position: absolute;
@@ -157,11 +212,11 @@
             left: 0;
             z-index: 1030;
             display: flex;
-            justify-content: space-around;
+            justify-content: space-between;
             align-items: center;
-            padding: 0 4px;
+            padding: 0 16px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.02);
         }
-
         .tab-item {
             color: #64748b;
             text-decoration: none;
@@ -171,29 +226,24 @@
             justify-content: center;
             flex: 1;
             height: 100%;
-            font-size: 0.55rem;
-            font-weight: 500;
+            font-size: 0.65rem;
+            font-weight: 600;
             transition: color 0.2s;
-            text-align: center;
+            position: relative;
         }
-        .tab-item i { font-size: 1.1rem; margin-bottom: 2px; }
-        .tab-item.active { color: #f97316; }
-
-        .ios-card {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 14px;
-            padding: 14px;
-            margin-bottom: 14px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
-            overflow: hidden;
+        .tab-item i { font-size: 1.3rem; margin-bottom: 2px; }
+        .tab-item.active { color: #0b5ed7; } /* Blue active state */
+        .tab-item .active-dot {
+            width: 4px;
+            height: 4px;
+            background: #0b5ed7;
+            border-radius: 50%;
+            position: absolute;
+            bottom: 8px;
+            opacity: 0;
+            transition: opacity 0.2s;
         }
-
-        .badge-orange {
-            background-color: #fff7ed;
-            color: #f97316;
-            border: 1px solid #fed7aa;
-        }
+        .tab-item.active .active-dot { opacity: 1; }
 
         /* Drawer Overlay */
         .drawer-overlay {
@@ -231,7 +281,7 @@
             right: 0;
         }
 
-        /* --- NEW: IN-APP BROWSER (MODAL) --- */
+        /* IN-APP BROWSER (MODAL) */
         .in-app-browser {
             position: absolute;
             top: 0;
@@ -269,15 +319,6 @@
             cursor: pointer;
             color: #334155;
             font-size: 1.2rem;
-            margin-right: 12px;
-        }
-        .in-app-title {
-            font-weight: 600;
-            color: #0f172a;
-            font-size: 0.95rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
         .in-app-iframe {
             flex: 1;
@@ -293,37 +334,31 @@
             
             <header class="ios-header">
                 <div class="header-logo">
-                    <img src="https://g1.restaurantassociation.com/media/images/RA-Newsletter/May-26/RA-black-logo.png" alt="Restaurant Association" onerror="this.src='https://placehold.co/180x44/ffffff/f97316?text=Restaurant+Assoc';">
+                    <img src="https://g1.restaurantassociation.com/media/images/RA-Newsletter/May-26/RA-black-logo.png" alt="Restaurant Association">
                 </div>
-                <div class="header-actions">
-                    <button class="btn-search-icon" aria-label="AI Search">
-                        <i class="bi bi-stars"></i>
-                    </button>
-                    <div class="user-avatar-badge" title="User KD">KD</div>
-                    <button class="btn-burger" id="btn-burger" aria-label="Open Menu">
-                        <i class="bi bi-list"></i>
-                    </button>
-                </div>
+                <button class="btn-search-icon" aria-label="Search">
+                    <i class="bi bi-search"></i>
+                </button>
             </header>
+
+            <div class="breaking-ticker">
+                <div class="breaking-badge">
+                    <div class="breaking-dot"></div> BREAKING
+                </div>
+                <marquee class="small text-dark mb-0 fw-semibold" style="white-space: nowrap; font-size: 0.8rem;" scrollamount="4">
+                    Levain Bakery moves to co-CEO structure • Wendy's tests dynamic pricing • California fast food wage updates...
+                </marquee>
+            </div>
 
             <div class="drawer-overlay" id="drawer-overlay"></div>
             <div class="offcanvas-drawer" id="offcanvas-drawer">
                 <div class="d-flex justify-content-between align-items-center px-4 pb-3 border-bottom">
-                    <span class="fw-bold text-dark" style="font-size: 1rem;">Navigation Menu</span>
+                    <span class="fw-bold text-dark" style="font-size: 1rem;">More Options</span>
                     <button class="btn-close" id="btn-close-drawer" aria-label="Close"></button>
                 </div>
                 <div class="list-group list-group-flush py-2">
-                    <a href="#" class="list-group-item list-group-item-action border-0 py-3 px-4 menu-item-link" data-target="home">
-                        <i class="bi bi-house-door me-3" style="color: #f97316;"></i> Home
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action border-0 py-3 px-4 menu-item-link" data-target="articles">
-                        <i class="bi bi-journal-richtext me-3 text-primary"></i> Articles
-                    </a>
                     <a href="#" class="list-group-item list-group-item-action border-0 py-3 px-4 menu-item-link" data-target="tvshows">
                         <i class="bi bi-tv me-3 text-danger"></i> TV Shows
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action border-0 py-3 px-4 menu-item-link" data-target="jobs">
-                        <i class="bi bi-briefcase me-3 text-success"></i> Jobs
                     </a>
                     <a href="#" class="list-group-item list-group-item-action border-0 py-3 px-4 menu-item-link" data-target="resources">
                         <i class="bi bi-folder2-open me-3 text-warning"></i> Resources
@@ -336,101 +371,54 @@
 
             <main class="app-content">
                 <div id="view-home" class="app-view active">
-                    <div class="ios-card text-center py-4 bg-white border-0 shadow-sm">
-                        <div class="mb-2">
-                            <i class="bi bi-shop fs-1 p-3 rounded-circle d-inline-block" style="color: #f97316; background-color: #fff7ed;"></i>
-                        </div>
-                        <h5 class="fw-bold mb-1 text-dark">Restaurant Association</h5>
-                        <p class="text-muted small mb-3">Empowering restaurant operators, chefs, and industry professionals.</p>
-                        <span class="badge badge-orange px-3 py-1 rounded-pill">Official Member Portal</span>
-                    </div>
-
-                    <h6 class="text-secondary text-uppercase small fw-bold mb-2">Quick Navigation</h6>
-                    <div class="row g-2 mb-3">
-                        <div class="col-6">
-                            <div class="ios-card text-center py-3 mb-0" style="cursor:pointer;" onclick="switchTab('articles')">
-                                <i class="bi bi-journal-text fs-3 text-primary mb-1 d-block"></i>
-                                <span class="small fw-semibold text-dark">Read Articles</span>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="ios-card text-center py-3 mb-0" style="cursor:pointer;" onclick="switchTab('tvshows')">
-                                <i class="bi bi-play-btn fs-3 text-danger mb-1 d-block"></i>
-                                <span class="small fw-semibold text-dark">Watch Shows</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="view-articles" class="app-view">
-                    <h6 class="fw-bold mb-3 text-dark">Industry Articles & News</h6>
                     <div class="data-container"></div>
                 </div>
 
-                <div id="view-tvshows" class="app-view">
-                    <h6 class="fw-bold mb-3 text-dark">Restaurant TV Shows & Series</h6>
+                <div id="view-news" class="app-view">
+                    <div class="data-container"></div>
+                </div>
+                
+                <div id="view-blogs" class="app-view">
                     <div class="data-container"></div>
                 </div>
 
                 <div id="view-jobs" class="app-view">
-                    <h6 class="fw-bold mb-3 text-dark">Hospitality Job Board</h6>
                     <div class="data-container"></div>
                 </div>
 
-                <div id="view-resources" class="app-view">
-                    <h6 class="fw-bold mb-3 text-dark">Operational Toolkits</h6>
-                    <div class="data-container"></div>
-                </div>
-
-                <div id="view-benefits" class="app-view">
-                    <div class="text-center py-2 mb-3">
-                        <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex p-3 mb-2">
-                            <i class="bi bi-award fs-2 text-warning"></i>
-                        </div>
-                        <h6 class="fw-bold mb-1 text-dark">Member Benefits</h6>
-                        <p class="text-muted small mb-0">Exclusive savings and perks for association members</p>
-                    </div>
-                    <div class="ios-card">
-                        <div class="d-flex justify-content-between py-2 border-bottom border-light" style="font-size: 0.85rem;">
-                            <span class="text-dark">Supply Chain Discounts</span>
-                            <span class="fw-semibold" style="color: #f97316;">Save up to 15%</span>
-                        </div>
-                        <div class="d-flex justify-content-between py-2 border-bottom border-light" style="font-size: 0.85rem;">
-                            <span class="text-dark">Legal & HR Advisory Helpline</span>
-                            <span class="text-success fw-semibold">Free Access</span>
-                        </div>
-                    </div>
-                </div>
+                <!-- Hidden containers for the 'More' menu items -->
+                <div id="view-tvshows" class="app-view"><div class="data-container"></div></div>
+                <div id="view-resources" class="app-view"><div class="data-container"></div></div>
+                <div id="view-benefits" class="app-view"><div class="text-center py-5">Benefits coming soon...</div></div>
             </main>
 
             <nav class="ios-tabbar">
                 <a href="#" class="tab-item active" data-target="home">
-                    <i class="bi bi-house-door-fill"></i>
-                    <span>Home</span>
+                    <i class="bi bi-house"></i>
+                    <span>HOME</span>
+                    <div class="active-dot"></div>
                 </a>
-                <a href="#" class="tab-item" data-target="articles">
-                    <i class="bi bi-journal-richtext"></i>
-                    <span>Articles</span>
+                <a href="#" class="tab-item" data-target="news">
+                    <i class="bi bi-newspaper"></i>
+                    <span>NEWS</span>
+                    <div class="active-dot"></div>
                 </a>
-                <a href="#" class="tab-item" data-target="tvshows">
-                    <i class="bi bi-tv"></i>
-                    <span>TV Shows</span>
+                <a href="#" class="tab-item" data-target="blogs">
+                    <i class="bi bi-card-text"></i>
+                    <span>BLOGS</span>
+                    <div class="active-dot"></div>
                 </a>
                 <a href="#" class="tab-item" data-target="jobs">
                     <i class="bi bi-briefcase"></i>
-                    <span>Jobs</span>
+                    <span>JOBS</span>
+                    <div class="active-dot"></div>
                 </a>
-                <a href="#" class="tab-item" data-target="resources">
-                    <i class="bi bi-folder2-open"></i>
-                    <span>Resources</span>
-                </a>
-                <a href="#" class="tab-item" data-target="benefits">
-                    <i class="bi bi-star"></i>
-                    <span>Benefits</span>
+                <a href="javascript:void(0);" class="tab-item" onclick="openDrawer()">
+                    <i class="bi bi-list"></i>
+                    <span>MORE</span>
                 </a>
             </nav>
 
-            <!-- --- NEW: IN-APP BROWSER UI --- -->
             <div class="in-app-browser" id="in-app-browser">
                 <div class="in-app-header">
                     <button class="in-app-back-btn" onclick="closeInAppBrowser()">
@@ -444,16 +432,28 @@
     </div>
 
     <script>
+        // CONFIGURATION: Map URLs for tabs. 
+        // Note: Currently, Home, News, and Blogs all point to your master Articles feed. 
+        // You will need to create separate n8n webhooks later to filter these correctly.
         const N8N_CONFIG = {
-            articles: 'https://sa1.altametrics.com/webhook/get-articles',
+            home: 'https://sa1.altametrics.com/webhook/get-articles',
+            news: 'https://sa1.altametrics.com/webhook/get-articles',
+            blogs: 'https://sa1.altametrics.com/webhook/get-articles',
             jobs: 'https://sa1.altametrics.com/webhook/get-jobs',
             tvshows: 'https://sa1.altametrics.com/webhook/get-tvshows',
             resources: 'https://sa1.altametrics.com/webhook/get-resources'
         };
 
+        // Initialize Home on load
+        document.addEventListener("DOMContentLoaded", () => {
+            fetchTabContent('home');
+        });
+
         function switchTab(targetViewId) {
             document.querySelectorAll('.ios-tabbar .tab-item').forEach(t => {
-                t.classList.toggle('active', t.getAttribute('data-target') === targetViewId);
+                if(t.hasAttribute('data-target')) {
+                    t.classList.toggle('active', t.getAttribute('data-target') === targetViewId);
+                }
             });
 
             document.querySelectorAll('.app-view').forEach(v => {
@@ -476,8 +476,8 @@
 
             container.innerHTML = `
                 <div class="text-center py-4">
-                    <div class="spinner-border spinner-border-sm text-warning" role="status"></div>
-                    <p class="small text-muted mt-2">Loading latest content...</p>
+                    <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
+                    <p class="small text-muted mt-2">Loading...</p>
                 </div>
             `;
 
@@ -505,18 +505,29 @@
                 }
 
                 container.innerHTML = '';
-                items.forEach(item => {
-                    const imageHtml = item.image ? `<img src="${item.image}" alt="Article Image" style="width: 100%; height: 160px; object-fit: cover; border-radius: 8px; margin-bottom: 12px; display: block;">` : '';
+                items.forEach((item, index) => {
+                    // Temporarily fake tags and dates so it matches your mockup perfectly 
+                    // until we configure n8n to extract the real ones!
+                    let badgeClass = "tag-news";
+                    let badgeText = "NEWS";
+                    if (index % 3 === 1) { badgeClass = "tag-payroll"; badgeText = "PAYROLL"; }
+                    if (index % 3 === 2) { badgeClass = "tag-backoffice"; badgeText = "BACK OFFICE"; }
+                    
+                    const dateText = "Aug 24, 2026"; 
 
-                    // The link is now changed from href="..." to onclick="openInAppBrowser(...)"
+                    const imageHtml = item.image ? `<img src="${item.image}" alt="Image" class="news-card-image">` : '';
+
                     const cardHtml = `
-                        <div class="ios-card">
+                        <div class="news-card" onclick="openInAppBrowser('${item.link}')">
+                            <div class="news-card-content">
+                                <div class="news-meta">
+                                    <span class="news-tag ${badgeClass}">${badgeText}</span>
+                                    <span class="news-date">${dateText}</span>
+                                </div>
+                                <h3 class="news-title">${item.title || 'Untitled'}</h3>
+                                <p class="news-desc">${item.description || ''}</p>
+                            </div>
                             ${imageHtml}
-                            <h6 class="fw-semibold mb-1 text-dark">${item.title || 'Untitled'}</h6>
-                            <p class="text-muted small mb-2" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">${item.description || ''}</p>
-                            <a href="javascript:void(0);" onclick="openInAppBrowser('${item.link}', '${item.title.replace(/'/g, "\\'")}')" class="text-orange small fw-semibold text-decoration-none" style="color: #f97316;">
-                                View Details <i class="bi bi-arrow-right"></i>
-                            </a>
                         </div>
                     `;
                     container.insertAdjacentHTML('beforeend', cardHtml);
@@ -526,28 +537,27 @@
                 console.error(`Error loading ${tabId}:`, error);
                 container.innerHTML = `
                     <div class="alert alert-light border small py-2 px-3 text-muted" role="alert">
-                        Unable to fetch live data. Please check your n8n workflow URL.
+                        Unable to fetch live data.
                     </div>
                 `;
             }
         }
 
-        // --- NEW: IN-APP BROWSER LOGIC ---
-        function openInAppBrowser(url, title) {
+        // In-App Browser Logic
+        function openInAppBrowser(url) {
             document.getElementById('in-app-iframe').src = url;
             document.getElementById('in-app-browser').classList.add('show');
         }
 
         function closeInAppBrowser() {
             document.getElementById('in-app-browser').classList.remove('show');
-            // Wait for the slide-out animation to finish before clearing the iframe
             setTimeout(() => {
                 document.getElementById('in-app-iframe').src = '';
             }, 300);
         }
 
         // Navigation listeners
-        document.querySelectorAll('.ios-tabbar .tab-item, .menu-item-link').forEach(item => {
+        document.querySelectorAll('.ios-tabbar .tab-item[data-target], .menu-item-link').forEach(item => {
             item.addEventListener('click', function(e) {
                 e.preventDefault();
                 const target = this.getAttribute('data-target');
@@ -557,7 +567,6 @@
         });
 
         // Drawer Controls
-        const btnBurger = document.getElementById('btn-burger');
         const drawerOverlay = document.getElementById('drawer-overlay');
         const offcanvasDrawer = document.getElementById('offcanvas-drawer');
 
@@ -571,7 +580,6 @@
             offcanvasDrawer.classList.remove('show');
         }
 
-        btnBurger.addEventListener('click', openDrawer);
         drawerOverlay.addEventListener('click', closeDrawer);
         document.getElementById('btn-close-drawer').addEventListener('click', closeDrawer);
     </script>
