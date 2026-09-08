@@ -36,7 +36,7 @@
             width: 100%;
             max-width: 390px;
             height: 844px;
-            background: #f6f4ed; /* Warm beige background from mockup */
+            background: #f6f4ed; 
             border-radius: 44px;
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2), 0 0 0 12px #334155;
             overflow: hidden;
@@ -45,7 +45,7 @@
             flex-direction: column;
         }
 
-        /* --- NEW HEADER (Clean, no avatar/burger) --- */
+        /* --- HEADER --- */
         .ios-header {
             background: #f6f4ed;
             height: 70px;
@@ -67,7 +67,7 @@
         .btn-search-icon {
             background: #ffffff;
             border: 1px solid #eaeaea;
-            color: #0b5ed7; /* Blue search icon */
+            color: #0b5ed7; 
             width: 38px;
             height: 38px;
             border-radius: 50%;
@@ -87,7 +87,7 @@
             padding: 8px 16px;
             display: flex;
             align-items: center;
-            margin-top: 70px; /* Offset for absolute header */
+            margin-top: 70px; 
         }
         .breaking-badge {
             border: 1px solid #d9534f;
@@ -119,8 +119,6 @@
             padding-left: 16px;
             padding-right: 16px;
             padding-top: 16px;
-            
-            /* Native mobile scrollbar hiding */
             -ms-overflow-style: none;  
             scrollbar-width: none;  
         }
@@ -277,7 +275,7 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            min-width: 0; /* CRITICAL FIX: Stops text from pushing the image out */
+            min-width: 0; 
         }
         .news-meta {
             display: flex;
@@ -286,7 +284,7 @@
             margin-bottom: 8px;
         }
         .news-tag {
-            background: #f05637; /* Default Orange */
+            background: #f05637; 
             color: #ffffff;
             font-size: 0.65rem;
             font-weight: 700;
@@ -294,8 +292,7 @@
             padding: 2px 6px;
             border-radius: 4px;
         }
-        .tag-payroll { background: #4caf50; } /* Green */
-        .tag-backoffice { background: #3f7b82; } /* Teal */
+        .tag-backoffice { background: #3f7b82; } 
         
         .news-date {
             font-size: 0.65rem;
@@ -303,14 +300,14 @@
             font-weight: 600;
         }
         .news-title {
-            font-family: 'Merriweather', serif; /* Serif font for headings */
+            font-family: 'Merriweather', serif; 
             font-size: 0.95rem;
             font-weight: 700;
             line-height: 1.3;
             color: #111;
             margin-bottom: 6px;
             white-space: normal;
-            overflow-wrap: break-word; /* Forces long text to wrap instead of breaking layout */
+            overflow-wrap: break-word;
         }
         .news-desc {
             font-size: 0.75rem;
@@ -361,7 +358,7 @@
             position: relative;
         }
         .tab-item i { font-size: 1.3rem; margin-bottom: 2px; }
-        .tab-item.active { color: #0b5ed7; } /* Blue active state */
+        .tab-item.active { color: #0b5ed7; } 
         .tab-item .active-dot {
             width: 4px;
             height: 4px;
@@ -410,51 +407,126 @@
             right: 0;
         }
 
-        /* IN-APP BROWSER (MODAL) */
-        .in-app-browser {
+        /* --- NATIVE ARTICLE DETAIL VIEW --- */
+        .article-detail-view {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: #ffffff;
+            background: #f6f4ed; 
             z-index: 2000;
             display: flex;
             flex-direction: column;
             transform: translateX(100%);
             transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            -ms-overflow-style: none;  
+            scrollbar-width: none;
         }
-        .in-app-browser.show {
+        .article-detail-view::-webkit-scrollbar { display: none; }
+        .article-detail-view.show {
             transform: translateX(0);
         }
-        .in-app-header {
-            height: 72px;
-            background: #ffffff;
-            border-bottom: 1px solid #e2e8f0;
-            display: flex;
-            align-items: center;
-            padding: 0 16px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        
+        .ad-hero {
+            position: relative;
+            width: 100%;
+            height: 380px;
+            background-size: cover;
+            background-position: top center;
+            background-color: #ddd;
         }
-        .in-app-back-btn {
-            background: #f1f5f9;
-            border: none;
-            width: 36px;
-            height: 36px;
+        .ad-nav {
+            position: absolute;
+            top: 24px; 
+            left: 0;
+            width: 100%;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            z-index: 10;
+        }
+        .ad-btn {
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
+            background: #ffffff;
+            color: #0b5ed7;
             display: flex;
             align-items: center;
             justify-content: center;
+            border: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             cursor: pointer;
-            color: #334155;
             font-size: 1.2rem;
         }
-        .in-app-iframe {
-            flex: 1;
-            width: 100%;
-            border: none;
-            background: #f8fafc;
+        
+        .ad-content-card {
+            background: #ffffff;
+            margin: -50px 16px 40px 16px;
+            border-radius: 12px;
+            padding: 24px;
+            position: relative;
+            z-index: 5;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            min-height: 400px;
         }
+        .ad-meta-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .ad-tag {
+            background: #f05637;
+            color: #ffffff;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+        .ad-date {
+            font-size: 0.75rem;
+            color: #666;
+            font-weight: 600;
+        }
+        .ad-title {
+            font-family: 'Merriweather', serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            line-height: 1.25;
+            color: #111;
+            margin-bottom: 20px;
+        }
+        .ad-author-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .ad-author-img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #eee;
+        }
+        .ad-author-name {
+            font-size: 0.9rem;
+            color: #333;
+            font-weight: 500;
+        }
+        .ad-body {
+            font-size: 1rem;
+            color: #111;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+        .ad-body p { margin-bottom: 16px; }
+
     </style>
 </head>
 <body>
@@ -548,13 +620,36 @@
                 </a>
             </nav>
 
-            <div class="in-app-browser" id="in-app-browser">
-                <div class="in-app-header">
-                    <button class="in-app-back-btn" onclick="closeInAppBrowser()">
-                        <i class="bi bi-chevron-left"></i>
-                    </button>
+            <!-- NATIVE ARTICLE DETAIL VIEW (REPLACED IFRAME) -->
+            <div class="article-detail-view" id="article-detail-view">
+                <div class="ad-hero" id="ad-hero-bg" style="background-image: url('');">
+                    <div class="ad-nav">
+                        <button class="ad-btn" onclick="closeNativeArticle()">
+                            <i class="bi bi-chevron-left"></i>
+                        </button>
+                        <button class="ad-btn">
+                            <i class="bi bi-bookmark"></i>
+                        </button>
+                    </div>
                 </div>
-                <iframe class="in-app-iframe" id="in-app-iframe" src=""></iframe>
+                
+                <div class="ad-content-card">
+                    <div class="ad-meta-row">
+                        <span class="ad-tag" id="ad-tag">NEWS</span>
+                        <span class="ad-date" id="ad-date">Recent</span>
+                    </div>
+                    
+                    <h1 class="ad-title" id="ad-title">Article Title</h1>
+                    
+                    <div class="ad-author-row">
+                        <img src="https://ui-avatars.com/api/?name=Restaurant+Association&background=random" class="ad-author-img" id="ad-author-img" alt="Author">
+                        <span class="ad-author-name" id="ad-author-name">Restaurant Association</span>
+                    </div>
+                    
+                    <div class="ad-body" id="ad-body">
+                        <!-- Content goes here -->
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -571,7 +666,6 @@
             resources: 'https://sa1.altametrics.com/webhook/get-resources'
         };
 
-        // Initialize Home on load
         document.addEventListener("DOMContentLoaded", () => {
             fetchTabContent('home');
         });
@@ -596,7 +690,7 @@
             }
         }
 
-        // Helper function to build a standard horizontal card
+        // Helper function to build a standard horizontal card (Updated with new onclick)
         function createCardHtml(item) {
             let badgeClass = "tag-news";
             let badgeText = "ARTICLE";
@@ -611,9 +705,10 @@
             
             const dateText = "Recent"; 
             const imageHtml = item.image ? `<img src="${item.image}" alt="Image" class="news-card-image">` : '';
+            const encodedItem = encodeURIComponent(JSON.stringify(item));
 
             return `
-                <div class="news-card" onclick="openInAppBrowser('${item.link}')">
+                <div class="news-card" data-item="${encodedItem}" onclick="openNativeArticle(this.dataset.item)">
                     <div class="news-card-content">
                         <div class="news-meta">
                             <span class="news-tag ${badgeClass}">${badgeText}</span>
@@ -657,7 +752,6 @@
                     items = responseData;
                 }
 
-                // --- THE MAGIC FILTER ---
                 if (tabId === 'news') {
                     items = items.filter(item => item.link.includes('/news/'));
                 } else if (tabId === 'blogs') {
@@ -671,7 +765,6 @@
 
                 container.innerHTML = '';
                 
-                // --- HOME TAB EXCLUSIVE LAYOUT (HERO + PILLS) ---
                 if (tabId === 'home' && items.length > 0) {
                     const heroItem = items[0];
                     
@@ -681,9 +774,10 @@
                     else if (heroItem.link.includes('/blog/') || heroItem.link.includes('/blogs/')) { heroBadgeClass = "tag-backoffice"; heroBadgeText = "BLOG"; }
                     
                     const heroImageHtml = heroItem.image ? heroItem.image : 'https://via.placeholder.com/400x240?text=No+Image';
+                    const encodedHeroItem = encodeURIComponent(JSON.stringify(heroItem));
 
                     const homeHeaderHtml = `
-                        <div class="hero-card" onclick="openInAppBrowser('${heroItem.link}')">
+                        <div class="hero-card" data-item="${encodedHeroItem}" onclick="openNativeArticle(this.dataset.item)">
                             <img src="${heroImageHtml}" class="hero-bg-image" alt="Hero Image">
                             <div class="hero-gradient"></div>
                             <span class="news-tag ${heroBadgeClass} hero-tag">${heroBadgeText}</span>
@@ -707,12 +801,10 @@
                     `;
                     container.insertAdjacentHTML('beforeend', homeHeaderHtml);
 
-                    // Render the rest of the items as standard cards
                     items.slice(1).forEach(item => {
                         container.insertAdjacentHTML('beforeend', createCardHtml(item));
                     });
                 } 
-                // --- NEWS, BLOGS, JOBS TABS (STANDARD CARDS ONLY) ---
                 else {
                     items.forEach(item => {
                         container.insertAdjacentHTML('beforeend', createCardHtml(item));
@@ -729,28 +821,39 @@
             }
         }
 
-        // In-App Browser Logic
-        function openInAppBrowser(url) {
-            document.getElementById('in-app-iframe').src = url;
-            document.getElementById('in-app-browser').classList.add('show');
+        // --- NEW: NATIVE ARTICLE VIEW LOGIC ---
+        function openNativeArticle(encodedItem) {
+            const item = JSON.parse(decodeURIComponent(encodedItem));
+            
+            // Populate the Native View with data
+            document.getElementById('ad-hero-bg').style.backgroundImage = `url('${item.image || 'https://via.placeholder.com/600x400?text=No+Image'}')`;
+            document.getElementById('ad-title').innerText = item.title || 'Untitled';
+            
+            // Set Tag and Date
+            let badgeClass = "tag-news";
+            let badgeText = "NEWS";
+            if (item.link.includes('/blog/') || item.link.includes('/blogs/')) {
+                badgeClass = "tag-backoffice";
+                badgeText = "BLOG";
+            }
+            const tagEl = document.getElementById('ad-tag');
+            tagEl.className = `ad-tag ${badgeClass}`;
+            tagEl.innerText = badgeText;
+            
+            // Populate Body 
+            document.getElementById('ad-body').innerHTML = `
+                <p>${item.description || 'No description available.'}</p>
+                <br>
+                <a href="${item.link}" target="_blank" class="btn btn-outline-primary w-100 rounded-pill mt-3">Read Full Article on Web</a>
+            `;
+            
+            // Show the View
+            document.getElementById('article-detail-view').classList.add('show');
         }
 
-        function closeInAppBrowser() {
-            document.getElementById('in-app-browser').classList.remove('show');
-            setTimeout(() => {
-                document.getElementById('in-app-iframe').src = '';
-            }, 300);
+        function closeNativeArticle() {
+            document.getElementById('article-detail-view').classList.remove('show');
         }
-
-        // Navigation listeners
-        document.querySelectorAll('.ios-tabbar .tab-item[data-target], .menu-item-link').forEach(item => {
-            item.addEventListener('click', function(e) {
-                e.preventDefault();
-                const target = this.getAttribute('data-target');
-                switchTab(target);
-                closeDrawer();
-            });
-        });
 
         // Drawer Controls
         const drawerOverlay = document.getElementById('drawer-overlay');
