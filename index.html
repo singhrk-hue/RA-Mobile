@@ -433,12 +433,11 @@
 
     <script>
         // CONFIGURATION: Map URLs for tabs. 
-        // Note: Currently, Home, News, and Blogs all point to your master Articles feed. 
-        // You will need to create separate n8n webhooks later to filter these correctly.
+        // Note: Home, News, and Blogs all point to the working 'get-articles' master feed!
         const N8N_CONFIG = {
             home: 'https://sa1.altametrics.com/webhook/get-articles',
-            news: 'https://sa1.altametrics.com/webhook/get-news',
-            blogs: 'https://sa1.altametrics.com/webhook/get-blogs',
+            news: 'https://sa1.altametrics.com/webhook/get-articles',
+            blogs: 'https://sa1.altametrics.com/webhook/get-articles',
             jobs: 'https://sa1.altametrics.com/webhook/get-jobs',
             tvshows: 'https://sa1.altametrics.com/webhook/get-tvshows',
             resources: 'https://sa1.altametrics.com/webhook/get-resources'
@@ -499,6 +498,15 @@
                     items = responseData;
                 }
 
+                // --- THE MAGIC FILTER ---
+                if (tabId === 'news') {
+                    // Only keep articles where the URL contains '/news/'
+                    items = items.filter(item => item.link.includes('/news/'));
+                } else if (tabId === 'blogs') {
+                    // Only keep articles where the URL contains '/blog/' or '/blogs/'
+                    items = items.filter(item => item.link.includes('/blog/') || item.link.includes('/blogs/'));
+                }
+
                 if (!items || items.length === 0) {
                     container.innerHTML = `<p class="text-muted small text-center py-4">No content currently available.</p>`;
                     return;
@@ -506,14 +514,20 @@
 
                 container.innerHTML = '';
                 items.forEach((item, index) => {
-                    // Temporarily fake tags and dates so it matches your mockup perfectly 
-                    // until we configure n8n to extract the real ones!
-                    let badgeClass = "tag-news";
-                    let badgeText = "NEWS";
-                    if (index % 3 === 1) { badgeClass = "tag-payroll"; badgeText = "PAYROLL"; }
-                    if (index % 3 === 2) { badgeClass = "tag-backoffice"; badgeText = "BACK OFFICE"; }
                     
-                    const dateText = "Aug 24, 2026"; 
+                    // --- DYNAMIC TAG GENERATION ---
+                    let badgeClass = "tag-news";
+                    let badgeText = "ARTICLE";
+                    
+                    if (item.link.includes('/news/')) {
+                        badgeClass = "tag-news";
+                        badgeText = "NEWS";
+                    } else if (item.link.includes('/blog/') || item.link.includes('/blogs/')) {
+                        badgeClass = "tag-backoffice";
+                        badgeText = "BLOG";
+                    }
+                    
+                    const dateText = "Recent"; // Placeholder until n8n extracts real dates
 
                     const imageHtml = item.image ? `<img src="${item.image}" alt="Image" class="news-card-image">` : '';
 
