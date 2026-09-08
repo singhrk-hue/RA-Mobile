@@ -534,7 +534,6 @@
 
         // --- NEW: IN-APP BROWSER LOGIC ---
         function openInAppBrowser(url, title) {
-            document.querySelector('.in-app-title').innerText = title || 'Website';
             document.getElementById('in-app-iframe').src = url;
             document.getElementById('in-app-browser').classList.add('show');
         }
