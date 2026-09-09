@@ -407,30 +407,36 @@
             right: 0;
         }
 
-        /* --- FIXED: NATIVE ARTICLE DETAIL VIEW --- */
+        /* --- PERFECTED NATIVE ARTICLE DETAIL VIEW --- */
         .article-detail-view {
-            position: absolute;
+            /* Changed to 'fixed' to perfectly overlay the entire app frame */
+            position: fixed;
             top: 0;
             
-            /* FIX 1: Physically moves it off-screen to the right so it CANNOT block the footer */
+            /* Pushed entirely off-screen to the right so it CANNOT block clicks */
             left: 100%; 
             
             width: 100%;
+            max-width: 390px;
             height: 100%;
             background: #f6f4ed; 
             z-index: 2000;
             display: block; 
-            transition: left 0.3s ease-in-out;
+            transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
             -ms-overflow-style: none;  
             scrollbar-width: none;
-            padding-bottom: 40px; 
+            padding-bottom: 40px;
+            
+            /* Safely disables interactions when hidden */
+            visibility: hidden; 
         }
         .article-detail-view::-webkit-scrollbar { display: none; }
         
         .article-detail-view.show {
-            left: 0; /* Slides it onto the screen */
+            left: 0; /* Slides onto the screen perfectly */
+            visibility: visible;
         }
         
         .ad-hero {
@@ -481,7 +487,6 @@
             position: relative;
             z-index: 5;
             box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-            /* FIX 2: Added break-word so URLs or text don't distort the border */
             word-wrap: break-word;
             overflow-wrap: break-word;
         }
@@ -572,13 +577,13 @@
                     <button class="btn-close" id="btn-close-drawer" aria-label="Close"></button>
                 </div>
                 <div class="list-group list-group-flush py-2">
-                    <a href="#" class="list-group-item list-group-item-action border-0 py-3 px-4 menu-item-link" data-target="tvshows">
+                    <a href="#" class="list-group-item list-group-item-action border-0 py-3 px-4 menu-item-link" onclick="closeDrawer()">
                         <i class="bi bi-tv me-3 text-danger"></i> TV Shows
                     </a>
-                    <a href="#" class="list-group-item list-group-item-action border-0 py-3 px-4 menu-item-link" data-target="resources">
+                    <a href="#" class="list-group-item list-group-item-action border-0 py-3 px-4 menu-item-link" onclick="closeDrawer()">
                         <i class="bi bi-folder2-open me-3 text-warning"></i> Resources
                     </a>
-                    <a href="#" class="list-group-item list-group-item-action border-0 py-3 px-4 menu-item-link" data-target="benefits">
+                    <a href="#" class="list-group-item list-group-item-action border-0 py-3 px-4 menu-item-link" onclick="closeDrawer()">
                         <i class="bi bi-star me-3 text-info"></i> Benefits
                     </a>
                 </div>
@@ -600,34 +605,31 @@
                 <div id="view-jobs" class="app-view">
                     <div class="data-container"></div>
                 </div>
-
-                <div id="view-tvshows" class="app-view"><div class="data-container"></div></div>
-                <div id="view-resources" class="app-view"><div class="data-container"></div></div>
-                <div id="view-benefits" class="app-view"><div class="text-center py-5">Benefits coming soon...</div></div>
             </main>
 
+            <!-- FIX 1: Bulletproof click actions directly on the tabs -->
             <nav class="ios-tabbar">
-                <a href="#" class="tab-item active" data-target="home">
+                <a href="#" class="tab-item active" id="tab-home" onclick="switchTab('home'); return false;">
                     <i class="bi bi-house"></i>
                     <span>HOME</span>
                     <div class="active-dot"></div>
                 </a>
-                <a href="#" class="tab-item" data-target="news">
+                <a href="#" class="tab-item" id="tab-news" onclick="switchTab('news'); return false;">
                     <i class="bi bi-newspaper"></i>
                     <span>NEWS</span>
                     <div class="active-dot"></div>
                 </a>
-                <a href="#" class="tab-item" data-target="blogs">
+                <a href="#" class="tab-item" id="tab-blogs" onclick="switchTab('blogs'); return false;">
                     <i class="bi bi-card-text"></i>
                     <span>BLOGS</span>
                     <div class="active-dot"></div>
                 </a>
-                <a href="#" class="tab-item" data-target="jobs">
+                <a href="#" class="tab-item" id="tab-jobs" onclick="switchTab('jobs'); return false;">
                     <i class="bi bi-briefcase"></i>
                     <span>JOBS</span>
                     <div class="active-dot"></div>
                 </a>
-                <a href="javascript:void(0);" class="tab-item" onclick="openDrawer()">
+                <a href="#" class="tab-item" onclick="openDrawer(); return false;">
                     <i class="bi bi-list"></i>
                     <span>MORE</span>
                 </a>
@@ -635,7 +637,6 @@
 
             <!-- NATIVE ARTICLE DETAIL VIEW -->
             <div class="article-detail-view" id="article-detail-view">
-                
                 <div class="ad-hero">
                     <img id="ad-hero-img" src="" alt="Hero Image">
                     <div class="ad-nav">
@@ -662,7 +663,7 @@
                     </div>
                     
                     <div class="ad-body" id="ad-body">
-                        <!-- Content goes here -->
+                        <!-- Content populates here -->
                     </div>
                 </div>
             </div>
@@ -676,39 +677,30 @@
             home: 'https://sa1.altametrics.com/webhook/get-articles',
             news: 'https://sa1.altametrics.com/webhook/get-articles',
             blogs: 'https://sa1.altametrics.com/webhook/get-articles',
-            jobs: 'https://sa1.altametrics.com/webhook/get-jobs',
-            tvshows: 'https://sa1.altametrics.com/webhook/get-tvshows',
-            resources: 'https://sa1.altametrics.com/webhook/get-resources'
+            jobs: 'https://sa1.altametrics.com/webhook/get-jobs'
         };
 
-        // FIX 3: Global array to perfectly store current tab's data without breaking HTML strings!
-        let currentTabData = [];
+        // FIX 2: A perfect global memory array to hold the exact data safely
+        window.appArticles = [];
 
         document.addEventListener("DOMContentLoaded", () => {
             fetchTabContent('home');
         });
 
         function switchTab(targetViewId) {
-            document.querySelectorAll('.ios-tabbar .tab-item').forEach(t => {
-                if(t.hasAttribute('data-target')) {
-                    t.classList.toggle('active', t.getAttribute('data-target') === targetViewId);
-                }
-            });
+            // Update active state on footer tabs
+            document.querySelectorAll('.ios-tabbar .tab-item').forEach(t => t.classList.remove('active'));
+            const activeTab = document.getElementById('tab-' + targetViewId);
+            if (activeTab) activeTab.classList.add('active');
 
-            document.querySelectorAll('.app-view').forEach(v => {
-                v.classList.remove('active');
-            });
-            
+            // Switch the content view
+            document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
             const activeView = document.getElementById('view-' + targetViewId);
-            if (activeView) {
-                activeView.classList.add('active');
-                if (N8N_CONFIG[targetViewId]) {
-                    fetchTabContent(targetViewId);
-                }
-            }
+            if (activeView) activeView.classList.add('active');
+
+            fetchTabContent(targetViewId);
         }
 
-        // Helper function to build a standard horizontal card (Updated to safely use Array Index)
         function createCardHtml(item, index) {
             let badgeClass = "tag-news";
             let badgeText = "ARTICLE";
@@ -724,6 +716,7 @@
             const dateText = "Recent"; 
             const imageHtml = item.image ? `<img src="${item.image}" alt="Image" class="news-card-image">` : '';
 
+            // Passes the exact memory index to prevent JSON string breaking!
             return `
                 <div class="news-card" onclick="openNativeArticle(${index})">
                     <div class="news-card-content">
@@ -776,18 +769,18 @@
                     parsedItems = parsedItems.filter(item => item.link && (item.link.includes('/blog/') || item.link.includes('/blogs/')));
                 }
 
-                // SAVE TO GLOBAL MEMORY TO PREVENT BROKEN CLICKS
-                currentTabData = parsedItems;
+                // Save to our safe global memory
+                window.appArticles = parsedItems;
 
-                if (!currentTabData || currentTabData.length === 0) {
+                if (!window.appArticles || window.appArticles.length === 0) {
                     container.innerHTML = `<p class="text-muted small text-center py-4">No content currently available.</p>`;
                     return;
                 }
 
                 container.innerHTML = '';
                 
-                if (tabId === 'home' && currentTabData.length > 0) {
-                    const heroItem = currentTabData[0];
+                if (tabId === 'home' && window.appArticles.length > 0) {
+                    const heroItem = window.appArticles[0];
                     
                     let heroBadgeClass = "tag-news";
                     let heroBadgeText = "ARTICLE";
@@ -821,12 +814,12 @@
                     `;
                     container.insertAdjacentHTML('beforeend', homeHeaderHtml);
 
-                    currentTabData.slice(1).forEach((item, index) => {
+                    window.appArticles.slice(1).forEach((item, index) => {
                         container.insertAdjacentHTML('beforeend', createCardHtml(item, index + 1));
                     });
                 } 
                 else {
-                    currentTabData.forEach((item, index) => {
+                    window.appArticles.forEach((item, index) => {
                         container.insertAdjacentHTML('beforeend', createCardHtml(item, index));
                     });
                 }
@@ -841,9 +834,9 @@
             }
         }
 
-        // --- FIXED: NATIVE ARTICLE VIEW LOGIC (PULLS FROM MEMORY) ---
+        // --- PERFECTED DETAIL LOGIC ---
         function openNativeArticle(index) {
-            const item = currentTabData[index];
+            const item = window.appArticles[index];
             if (!item) return;
             
             const defaultImg = 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?q=80&w=1000&auto=format&fit=crop';
@@ -863,7 +856,7 @@
             tagEl.className = `ad-tag ${badgeClass}`;
             tagEl.innerText = badgeText;
             
-            // Cleaned to prevent nested HTML bugs causing border distortion
+            // 3. FIX: Displaying the content safely.
             const cleanContent = item.content || item.description || 'Article text is currently unavailable.';
             
             document.getElementById('ad-body').innerHTML = `
@@ -892,7 +885,6 @@
         }
 
         drawerOverlay.addEventListener('click', closeDrawer);
-        document.getElementById('btn-close-drawer').addEventListener('click', closeDrawer);
     </script>
 </body>
 </html>
