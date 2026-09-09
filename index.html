@@ -294,11 +294,6 @@
         }
         .tag-backoffice { background: #3f7b82; } 
         
-        .news-date {
-            font-size: 0.65rem;
-            color: #666;
-            font-weight: 600;
-        }
         .news-title {
             font-family: 'Merriweather', serif; 
             font-size: 0.95rem;
@@ -486,7 +481,7 @@
         }
         .ad-meta-row {
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-start; /* Removed space-between since date is gone */
             align-items: center;
             margin-bottom: 16px;
         }
@@ -501,11 +496,6 @@
         }
         .tag-backoffice { background: #3f7b82; } 
         
-        .ad-date {
-            font-size: 0.75rem;
-            color: #666;
-            font-weight: 600;
-        }
         .ad-title {
             font-family: 'Merriweather', serif;
             font-size: 1.6rem;
@@ -651,7 +641,6 @@
                 <div class="ad-content-card">
                     <div class="ad-meta-row">
                         <span class="ad-tag" id="ad-tag">NEWS</span>
-                        <span class="ad-date" id="ad-date">Recent</span>
                     </div>
                     
                     <h1 class="ad-title" id="ad-title">Article Title</h1>
@@ -699,15 +688,11 @@
 
         function createCardHtml(item, index) {
             let badgeClass = "tag-news";
-            let badgeText = "ARTICLE";
-            
-            if (item.link && item.link.includes('/news/')) {
-                badgeClass = "tag-news";
-                badgeText = "NEWS";
-            } else if (item.link && (item.link.includes('/blog/') || item.link.includes('/blogs/'))) {
+            if (item.link && (item.link.includes('/blog/') || item.link.includes('/blogs/'))) {
                 badgeClass = "tag-backoffice";
-                badgeText = "BLOG";
             }
+            // Use specific category if n8n provides it, otherwise fallback.
+            let badgeText = item.category ? item.category : (badgeClass === "tag-news" ? "NEWS" : "BLOG");
             
             const imageHtml = item.image ? `<img src="${item.image}" alt="Image" class="news-card-image">` : '';
 
@@ -716,7 +701,6 @@
                     <div class="news-card-content">
                         <div class="news-meta">
                             <span class="news-tag ${badgeClass}">${badgeText}</span>
-                            <span class="news-date">Recent</span>
                         </div>
                         <h3 class="news-title">${item.title || 'Untitled'}</h3>
                         <p class="news-desc">${item.description || ''}</p>
@@ -758,7 +742,8 @@
                             description: data.description ? data.description[index] : '',
                             link: rawLink,
                             image: rawImage,
-                            content: data.content ? data.content[index] : ''
+                            content: data.content ? data.content[index] : '',
+                            category: data.category ? data.category[index] : ''
                         };
                     });
                 } else if (Array.isArray(responseData)) {
@@ -784,9 +769,10 @@
                     const heroItem = parsedItems[0];
                     
                     let heroBadgeClass = "tag-news";
-                    let heroBadgeText = "ARTICLE";
-                    if (heroItem.link && heroItem.link.includes('/news/')) { heroBadgeClass = "tag-news"; heroBadgeText = "NEWS"; } 
-                    else if (heroItem.link && (heroItem.link.includes('/blog/') || heroItem.link.includes('/blogs/'))) { heroBadgeClass = "tag-backoffice"; heroBadgeText = "BLOG"; }
+                    if (heroItem.link && (heroItem.link.includes('/blog/') || heroItem.link.includes('/blogs/'))) { 
+                        heroBadgeClass = "tag-backoffice"; 
+                    }
+                    let heroBadgeText = heroItem.category ? heroItem.category : (heroBadgeClass === "tag-news" ? "NEWS" : "BLOG");
                     
                     const heroImageHtml = (heroItem.image && heroItem.image.trim() !== '') ? heroItem.image : 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?q=80&w=1000&auto=format&fit=crop';
 
@@ -835,13 +821,10 @@
             }
         }
 
-        // --- FIXED: NATIVE ARTICLE LOGIC ---
         function openNativeArticle(index) {
             const item = window.appArticles[index];
             if (!item) return;
             
-            // 1. Image Fix: We no longer try to scrape a new image. 
-            // We STRICTLY use the working image that n8n already provided.
             const defaultImg = 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?q=80&w=1000&auto=format&fit=crop';
             const imgEl = document.getElementById('ad-hero-img');
             imgEl.src = (item.image && item.image.trim() !== '') ? item.image : defaultImg;
@@ -850,19 +833,17 @@
             document.getElementById('ad-title').innerText = item.title || 'Untitled';
             
             let badgeClass = "tag-news";
-            let badgeText = "NEWS";
             if (item.link && (item.link.includes('/blog/') || item.link.includes('/blogs/'))) {
                 badgeClass = "tag-backoffice";
-                badgeText = "BLOG";
             }
+            let badgeText = item.category ? item.category : (badgeClass === "tag-news" ? "NEWS" : "BLOG");
+            
             const tagEl = document.getElementById('ad-tag');
             tagEl.className = `ad-tag ${badgeClass}`;
             tagEl.innerText = badgeText;
             
             const bodyEl = document.getElementById('ad-body');
             
-            // 2. Content Fix: We check if n8n has provided the "content" field.
-            // If n8n has NOT provided the full text yet, we show a clean fallback button.
             if (item.content && item.content.trim() !== '') {
                 bodyEl.innerHTML = `<div style="font-weight: 400; line-height: 1.7; color: #222;">${item.content}</div>`;
             } else {
