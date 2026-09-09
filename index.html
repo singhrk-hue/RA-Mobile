@@ -411,35 +411,26 @@
         .article-detail-view {
             position: absolute;
             top: 0;
-            left: 0;
+            
+            /* FIX 1: Physically moves it off-screen to the right so it CANNOT block the footer */
+            left: 100%; 
+            
             width: 100%;
             height: 100%;
             background: #f6f4ed; 
             z-index: 2000;
-            
-            /* FIX 1: Display Block stops the text from spilling out the bottom */
             display: block; 
-            
-            transform: translateX(100%);
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: left 0.3s ease-in-out;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
             -ms-overflow-style: none;  
             scrollbar-width: none;
-            
-            /* FIX 2: Fully hides the view so footer tabs remain 100% clickable */
-            visibility: hidden;
-            pointer-events: none;
-            opacity: 0;
-            padding-bottom: 40px; /* Gives scrolling space at the very bottom */
+            padding-bottom: 40px; 
         }
         .article-detail-view::-webkit-scrollbar { display: none; }
         
         .article-detail-view.show {
-            transform: translateX(0);
-            visibility: visible;
-            pointer-events: auto;
-            opacity: 1;
+            left: 0; /* Slides it onto the screen */
         }
         
         .ad-hero {
@@ -490,7 +481,9 @@
             position: relative;
             z-index: 5;
             box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-            /* FIX 3: Removed min-height so the card naturally hugs the text perfectly */
+            /* FIX 2: Added break-word so URLs or text don't distort the border */
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
         .ad-meta-row {
             display: flex;
@@ -608,7 +601,6 @@
                     <div class="data-container"></div>
                 </div>
 
-                <!-- Hidden containers for the 'More' menu items -->
                 <div id="view-tvshows" class="app-view"><div class="data-container"></div></div>
                 <div id="view-resources" class="app-view"><div class="data-container"></div></div>
                 <div id="view-benefits" class="app-view"><div class="text-center py-5">Benefits coming soon...</div></div>
@@ -689,6 +681,9 @@
             resources: 'https://sa1.altametrics.com/webhook/get-resources'
         };
 
+        // FIX 3: Global array to perfectly store current tab's data without breaking HTML strings!
+        let currentTabData = [];
+
         document.addEventListener("DOMContentLoaded", () => {
             fetchTabContent('home');
         });
@@ -713,25 +708,24 @@
             }
         }
 
-        // Helper function to build a standard horizontal card
-        function createCardHtml(item) {
+        // Helper function to build a standard horizontal card (Updated to safely use Array Index)
+        function createCardHtml(item, index) {
             let badgeClass = "tag-news";
             let badgeText = "ARTICLE";
             
-            if (item.link.includes('/news/')) {
+            if (item.link && item.link.includes('/news/')) {
                 badgeClass = "tag-news";
                 badgeText = "NEWS";
-            } else if (item.link.includes('/blog/') || item.link.includes('/blogs/')) {
+            } else if (item.link && (item.link.includes('/blog/') || item.link.includes('/blogs/'))) {
                 badgeClass = "tag-backoffice";
                 badgeText = "BLOG";
             }
             
             const dateText = "Recent"; 
             const imageHtml = item.image ? `<img src="${item.image}" alt="Image" class="news-card-image">` : '';
-            const encodedItem = encodeURIComponent(JSON.stringify(item));
 
             return `
-                <div class="news-card" data-item="${encodedItem}" onclick="openNativeArticle(this.getAttribute('data-item'))">
+                <div class="news-card" onclick="openNativeArticle(${index})">
                     <div class="news-card-content">
                         <div class="news-meta">
                             <span class="news-tag ${badgeClass}">${badgeText}</span>
@@ -761,46 +755,49 @@
                 const response = await fetch(N8N_CONFIG[tabId]);
                 const responseData = await response.json();
                 
-                let items = [];
+                let parsedItems = [];
                 const data = Array.isArray(responseData) ? responseData[0] : responseData;
 
                 if (data && data.title && Array.isArray(data.title)) {
-                    items = data.title.map((title, index) => ({
+                    parsedItems = data.title.map((title, index) => ({
                         title: title,
                         description: data.description ? data.description[index] : '',
                         link: data.link ? data.link[index] : '#',
-                        image: data.image ? data.image[index] : ''
+                        image: data.image ? data.image[index] : '',
+                        content: data.content ? data.content[index] : ''
                     }));
                 } else if (Array.isArray(responseData)) {
-                    items = responseData;
+                    parsedItems = responseData;
                 }
 
                 if (tabId === 'news') {
-                    items = items.filter(item => item.link.includes('/news/'));
+                    parsedItems = parsedItems.filter(item => item.link && item.link.includes('/news/'));
                 } else if (tabId === 'blogs') {
-                    items = items.filter(item => item.link.includes('/blog/') || item.link.includes('/blogs/'));
+                    parsedItems = parsedItems.filter(item => item.link && (item.link.includes('/blog/') || item.link.includes('/blogs/')));
                 }
 
-                if (!items || items.length === 0) {
+                // SAVE TO GLOBAL MEMORY TO PREVENT BROKEN CLICKS
+                currentTabData = parsedItems;
+
+                if (!currentTabData || currentTabData.length === 0) {
                     container.innerHTML = `<p class="text-muted small text-center py-4">No content currently available.</p>`;
                     return;
                 }
 
                 container.innerHTML = '';
                 
-                if (tabId === 'home' && items.length > 0) {
-                    const heroItem = items[0];
+                if (tabId === 'home' && currentTabData.length > 0) {
+                    const heroItem = currentTabData[0];
                     
                     let heroBadgeClass = "tag-news";
                     let heroBadgeText = "ARTICLE";
-                    if (heroItem.link.includes('/news/')) { heroBadgeClass = "tag-news"; heroBadgeText = "NEWS"; } 
-                    else if (heroItem.link.includes('/blog/') || heroItem.link.includes('/blogs/')) { heroBadgeClass = "tag-backoffice"; heroBadgeText = "BLOG"; }
+                    if (heroItem.link && heroItem.link.includes('/news/')) { heroBadgeClass = "tag-news"; heroBadgeText = "NEWS"; } 
+                    else if (heroItem.link && (heroItem.link.includes('/blog/') || heroItem.link.includes('/blogs/'))) { heroBadgeClass = "tag-backoffice"; heroBadgeText = "BLOG"; }
                     
-                    const heroImageHtml = heroItem.image ? heroItem.image : 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?q=80&w=1000&auto=format&fit=crop';
-                    const encodedHeroItem = encodeURIComponent(JSON.stringify(heroItem));
+                    const heroImageHtml = (heroItem.image && heroItem.image.trim() !== '') ? heroItem.image : 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?q=80&w=1000&auto=format&fit=crop';
 
                     const homeHeaderHtml = `
-                        <div class="hero-card" data-item="${encodedHeroItem}" onclick="openNativeArticle(this.getAttribute('data-item'))">
+                        <div class="hero-card" onclick="openNativeArticle(0)">
                             <img src="${heroImageHtml}" class="hero-bg-image" alt="Hero Image">
                             <div class="hero-gradient"></div>
                             <span class="news-tag ${heroBadgeClass} hero-tag">${heroBadgeText}</span>
@@ -824,13 +821,13 @@
                     `;
                     container.insertAdjacentHTML('beforeend', homeHeaderHtml);
 
-                    items.slice(1).forEach(item => {
-                        container.insertAdjacentHTML('beforeend', createCardHtml(item));
+                    currentTabData.slice(1).forEach((item, index) => {
+                        container.insertAdjacentHTML('beforeend', createCardHtml(item, index + 1));
                     });
                 } 
                 else {
-                    items.forEach(item => {
-                        container.insertAdjacentHTML('beforeend', createCardHtml(item));
+                    currentTabData.forEach((item, index) => {
+                        container.insertAdjacentHTML('beforeend', createCardHtml(item, index));
                     });
                 }
 
@@ -844,18 +841,16 @@
             }
         }
 
-        // --- FIXED: NATIVE ARTICLE VIEW LOGIC ---
-        function openNativeArticle(encodedItem) {
-            if (!encodedItem) return;
-            const item = JSON.parse(decodeURIComponent(encodedItem));
+        // --- FIXED: NATIVE ARTICLE VIEW LOGIC (PULLS FROM MEMORY) ---
+        function openNativeArticle(index) {
+            const item = currentTabData[index];
+            if (!item) return;
             
-            // 1. Image Fix: Fallback to a real stock image if missing, and safe error handling
             const defaultImg = 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?q=80&w=1000&auto=format&fit=crop';
             const imgEl = document.getElementById('ad-hero-img');
             imgEl.src = (item.image && item.image.trim() !== '') ? item.image : defaultImg;
-            imgEl.onerror = function() { this.src = defaultImg; }; // Failsafe for broken URLs
+            imgEl.onerror = function() { this.src = defaultImg; };
             
-            // 2. Data Passing Fix: Data is cleanly passed using .getAttribute
             document.getElementById('ad-title').innerText = item.title || 'Untitled';
             
             let badgeClass = "tag-news";
@@ -868,11 +863,11 @@
             tagEl.className = `ad-tag ${badgeClass}`;
             tagEl.innerText = badgeText;
             
-            // 3. Clean Text Body: Removes the confusing placeholder text
+            // Cleaned to prevent nested HTML bugs causing border distortion
             const cleanContent = item.content || item.description || 'Article text is currently unavailable.';
             
             document.getElementById('ad-body').innerHTML = `
-                <p>${cleanContent}</p>
+                <div>${cleanContent}</div>
             `;
             
             document.getElementById('article-detail-view').classList.add('show');
