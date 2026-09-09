@@ -325,6 +325,7 @@
             border-radius: 8px;
             object-fit: cover;
             flex-shrink: 0;
+            background: #eee;
         }
 
         /* --- NEW TAB BAR (Footer) --- */
@@ -409,11 +410,9 @@
 
         /* --- PERFECTED NATIVE ARTICLE DETAIL VIEW --- */
         .article-detail-view {
-            /* FIX 1: Returned to 'absolute' so it perfectly stays inside the iPhone container */
             position: absolute;
             top: 0;
-            left: 100%; /* Keeps it off-screen to the right */
-            
+            left: 100%; /* Pushes completely off screen */
             width: 100%;
             height: 100%;
             background: #f6f4ed; 
@@ -438,7 +437,7 @@
             position: relative;
             width: 100%;
             height: 380px;
-            background-color: #e2e8f0;
+            background-color: #ddd;
         }
         .ad-hero img {
             width: 100%;
@@ -526,7 +525,13 @@
             height: 36px;
             border-radius: 50%;
             object-fit: cover;
-            background: #eee;
+            background: #0b5ed7;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
         }
         .ad-author-name {
             font-size: 0.9rem;
@@ -539,7 +544,16 @@
             line-height: 1.7;
             font-weight: 400;
         }
-        .ad-body p { margin-bottom: 16px; }
+        .ad-body p { margin-bottom: 18px; }
+        
+        /* Spinner styling */
+        .loading-spinner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 0;
+            color: #6c757d;
+        }
 
     </style>
 </head>
@@ -652,7 +666,7 @@
                     <h1 class="ad-title" id="ad-title">Article Title</h1>
                     
                     <div class="ad-author-row">
-                        <img src="https://ui-avatars.com/api/?name=Restaurant+Association&background=random" class="ad-author-img" id="ad-author-img" alt="Author">
+                        <div class="ad-author-img">RA</div>
                         <span class="ad-author-name" id="ad-author-name">Restaurant Association</span>
                     </div>
                     
@@ -674,10 +688,6 @@
             jobs: 'https://sa1.altametrics.com/webhook/get-jobs'
         };
 
-        // FIX 2: Global Dictionary maps every article securely to its URL. 
-        // This makes it 100% impossible to open the wrong image/article!
-        window.articleDictionary = {};
-
         document.addEventListener("DOMContentLoaded", () => {
             fetchTabContent('home');
         });
@@ -694,10 +704,8 @@
             fetchTabContent(targetViewId);
         }
 
+        // Bulletproof encoding function to ensure data safely reaches the onclick handler
         function createCardHtml(item) {
-            // Save item directly into dictionary
-            if(item.link) { window.articleDictionary[item.link] = item; }
-
             let badgeClass = "tag-news";
             let badgeText = "ARTICLE";
             
@@ -710,11 +718,22 @@
             }
             
             const dateText = "Recent"; 
-            const imageHtml = item.image ? `<img src="${item.image}" alt="Image" class="news-card-image">` : '';
+            
+            // Format image safely
+            let safeImage = item.image || '';
+            if (safeImage.startsWith('/')) { safeImage = 'https://restaurantassociation.com' + safeImage; }
+            const imageHtml = safeImage ? `<img src="${safeImage}" alt="Image" class="news-card-image">` : `<div class="news-card-image d-flex align-items-center justify-content-center bg-light text-muted small">No Image</div>`;
 
-            // The click event securely uses the article's unique URL link!
+            // URI Encode the entire JSON object safely
+            const encodedItem = encodeURIComponent(JSON.stringify({
+                title: item.title || 'Untitled',
+                link: item.link || '',
+                image: safeImage,
+                description: item.description || ''
+            }));
+
             return `
-                <div class="news-card" onclick="openNativeArticle('${item.link}')">
+                <div class="news-card" data-item="${encodedItem}" onclick="openNativeArticle(this.getAttribute('data-item'))">
                     <div class="news-card-content">
                         <div class="news-meta">
                             <span class="news-tag ${badgeClass}">${badgeText}</span>
@@ -752,8 +771,7 @@
                         title: title,
                         description: data.description ? data.description[index] : '',
                         link: data.link ? data.link[index] : '#',
-                        image: data.image ? data.image[index] : '',
-                        content: data.content ? data.content[index] : ''
+                        image: data.image ? data.image[index] : ''
                     }));
                 } else if (Array.isArray(responseData)) {
                     parsedItems = responseData;
@@ -774,17 +792,24 @@
                 
                 if (tabId === 'home' && parsedItems.length > 0) {
                     const heroItem = parsedItems[0];
-                    if(heroItem.link) { window.articleDictionary[heroItem.link] = heroItem; }
                     
                     let heroBadgeClass = "tag-news";
                     let heroBadgeText = "ARTICLE";
                     if (heroItem.link && heroItem.link.includes('/news/')) { heroBadgeClass = "tag-news"; heroBadgeText = "NEWS"; } 
                     else if (heroItem.link && (heroItem.link.includes('/blog/') || heroItem.link.includes('/blogs/'))) { heroBadgeClass = "tag-backoffice"; heroBadgeText = "BLOG"; }
                     
-                    const heroImageHtml = (heroItem.image && heroItem.image.trim() !== '') ? heroItem.image : 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?q=80&w=1000&auto=format&fit=crop';
+                    let heroImageHtml = heroItem.image || 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?q=80&w=1000&auto=format&fit=crop';
+                    if (heroImageHtml.startsWith('/')) { heroImageHtml = 'https://restaurantassociation.com' + heroImageHtml; }
+
+                    const encodedHeroItem = encodeURIComponent(JSON.stringify({
+                        title: heroItem.title || 'Untitled',
+                        link: heroItem.link || '',
+                        image: heroImageHtml,
+                        description: heroItem.description || ''
+                    }));
 
                     const homeHeaderHtml = `
-                        <div class="hero-card" onclick="openNativeArticle('${heroItem.link}')">
+                        <div class="hero-card" data-item="${encodedHeroItem}" onclick="openNativeArticle(this.getAttribute('data-item'))">
                             <img src="${heroImageHtml}" class="hero-bg-image" alt="Hero Image">
                             <div class="hero-gradient"></div>
                             <span class="news-tag ${heroBadgeClass} hero-tag">${heroBadgeText}</span>
@@ -828,18 +853,19 @@
             }
         }
 
-        // --- PERFECTED NATIVE ARTICLE VIEW ---
-        function openNativeArticle(linkUrl) {
-            // Retrieves the exact item from the dictionary using its URL
-            const item = window.articleDictionary[linkUrl];
-            if (!item) return;
+        // --- NEW LIVE SCRAPER ENGINE FOR FULL ARTICLE & HI-RES IMAGE ---
+        function openNativeArticle(encodedItem) {
+            if (!encodedItem) return;
+            const item = JSON.parse(decodeURIComponent(encodedItem));
             
+            // 1. Initial State: Load what we know immediately
+            document.getElementById('ad-title').innerText = item.title;
+            
+            // Fix Image Fallbacks
             const defaultImg = 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?q=80&w=1000&auto=format&fit=crop';
             const imgEl = document.getElementById('ad-hero-img');
             imgEl.src = (item.image && item.image.trim() !== '') ? item.image : defaultImg;
             imgEl.onerror = function() { this.src = defaultImg; };
-            
-            document.getElementById('ad-title').innerText = item.title || 'Untitled';
             
             let badgeClass = "tag-news";
             let badgeText = "NEWS";
@@ -851,14 +877,72 @@
             tagEl.className = `ad-tag ${badgeClass}`;
             tagEl.innerText = badgeText;
             
-            // Re-added the missing "Whole Article" data connection
-            const cleanContent = item.content || item.description || 'Article text is currently unavailable.';
+            const bodyEl = document.getElementById('ad-body');
             
-            document.getElementById('ad-body').innerHTML = `
-                <div>${cleanContent}</div>
+            // 2. Show a loading spinner inside the article body
+            bodyEl.innerHTML = `
+                <div class="loading-spinner">
+                    <div class="spinner-border spinner-border-sm text-primary mb-2" role="status"></div>
+                    <span style="font-size: 0.85rem;">Loading full article...</span>
+                </div>
             `;
             
+            // Slide the view open
             document.getElementById('article-detail-view').classList.add('show');
+            
+            // 3. MAGIC: Dynamically scrape the live article webpage behind the scenes!
+            if (item.link) {
+                // We use a safe public proxy to read the website's HTML without CORS errors
+                fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(item.link)}`)
+                .then(response => {
+                    if (response.ok) return response.json();
+                    throw new Error('Network response was not ok.');
+                })
+                .then(data => {
+                    // Turn the string of HTML into a real, searchable document
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(data.contents, "text/html");
+                    
+                    // --- A. Extract the True High-Res Image ---
+                    // By checking the website's meta tags, we bypass any broken "lazy loading" thumbnail images!
+                    const metaImage = doc.querySelector('meta[property="og:image"]');
+                    if (metaImage && metaImage.content) {
+                        imgEl.src = metaImage.content;
+                    }
+                    
+                    // --- B. Extract the Full Article Paragraphs ---
+                    let articleContent = "";
+                    const articleTag = doc.querySelector('article'); 
+                    
+                    // Find the paragraphs inside the main article container
+                    const paragraphs = articleTag ? articleTag.querySelectorAll('p') : doc.querySelectorAll('p');
+                    
+                    paragraphs.forEach(p => {
+                        // Skip tiny menus, navigation text, and empty spaces
+                        if (p.innerText.trim().length > 30) {
+                            articleContent += `<p>${p.innerHTML}</p>`;
+                        }
+                    });
+                    
+                    // Inject the fully scraped article into the app!
+                    if (articleContent) {
+                        bodyEl.innerHTML = `<div style="font-weight: 400; line-height: 1.7; color: #222;">${articleContent}</div>`;
+                    } else {
+                        // Safe Fallback if the site's layout changes
+                        bodyEl.innerHTML = `<p>${item.description}</p><p class="text-muted mt-4"><em>Cannot display full text.</em></p>`;
+                    }
+                })
+                .catch(err => {
+                    console.error("Scraper Error:", err);
+                    // Safe Fallback if internet connection dips
+                    bodyEl.innerHTML = `
+                        <p style="font-weight:600;">${item.description}</p>
+                        <p class="text-muted small mt-4"><em>Failed to load full article via live web extraction.</em></p>
+                    `;
+                });
+            } else {
+                bodyEl.innerHTML = `<p>${item.description}</p>`;
+            }
         }
 
         function closeNativeArticle() {
