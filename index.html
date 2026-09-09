@@ -328,7 +328,7 @@
             background: #eee;
         }
 
-        /* --- NEW TAB BAR (Footer) --- */
+        /* --- TAB BAR (Footer) --- */
         .ios-tabbar {
             background: #ffffff;
             border-top: 1px solid #e2e8f0;
@@ -412,7 +412,7 @@
         .article-detail-view {
             position: absolute;
             top: 0;
-            left: 100%; /* Pushes completely off screen */
+            left: 100%; 
             width: 100%;
             height: 100%;
             background: #f6f4ed; 
@@ -546,7 +546,6 @@
         }
         .ad-body p { margin-bottom: 18px; }
         
-        /* Spinner styling */
         .loading-spinner {
             display: flex;
             flex-direction: column;
@@ -554,7 +553,6 @@
             padding: 40px 0;
             color: #6c757d;
         }
-
     </style>
 </head>
 <body>
@@ -688,6 +686,8 @@
             jobs: 'https://sa1.altametrics.com/webhook/get-jobs'
         };
 
+        window.appArticles = [];
+
         document.addEventListener("DOMContentLoaded", () => {
             fetchTabContent('home');
         });
@@ -704,8 +704,7 @@
             fetchTabContent(targetViewId);
         }
 
-        // Bulletproof encoding function to ensure data safely reaches the onclick handler
-        function createCardHtml(item) {
+        function createCardHtml(item, index) {
             let badgeClass = "tag-news";
             let badgeText = "ARTICLE";
             
@@ -717,27 +716,14 @@
                 badgeText = "BLOG";
             }
             
-            const dateText = "Recent"; 
-            
-            // Format image safely
-            let safeImage = item.image || '';
-            if (safeImage.startsWith('/')) { safeImage = 'https://restaurantassociation.com' + safeImage; }
-            const imageHtml = safeImage ? `<img src="${safeImage}" alt="Image" class="news-card-image">` : `<div class="news-card-image d-flex align-items-center justify-content-center bg-light text-muted small">No Image</div>`;
-
-            // URI Encode the entire JSON object safely
-            const encodedItem = encodeURIComponent(JSON.stringify({
-                title: item.title || 'Untitled',
-                link: item.link || '',
-                image: safeImage,
-                description: item.description || ''
-            }));
+            const imageHtml = item.image ? `<img src="${item.image}" alt="Image" class="news-card-image">` : '';
 
             return `
-                <div class="news-card" data-item="${encodedItem}" onclick="openNativeArticle(this.getAttribute('data-item'))">
+                <div class="news-card" onclick="openNativeArticle(${index})">
                     <div class="news-card-content">
                         <div class="news-meta">
                             <span class="news-tag ${badgeClass}">${badgeText}</span>
-                            <span class="news-date">${dateText}</span>
+                            <span class="news-date">Recent</span>
                         </div>
                         <h3 class="news-title">${item.title || 'Untitled'}</h3>
                         <p class="news-desc">${item.description || ''}</p>
@@ -767,12 +753,22 @@
                 const data = Array.isArray(responseData) ? responseData[0] : responseData;
 
                 if (data && data.title && Array.isArray(data.title)) {
-                    parsedItems = data.title.map((title, index) => ({
-                        title: title,
-                        description: data.description ? data.description[index] : '',
-                        link: data.link ? data.link[index] : '#',
-                        image: data.image ? data.image[index] : ''
-                    }));
+                    // FIX: We intercept and clean the broken Relative URLs right here at the source!
+                    parsedItems = data.title.map((title, index) => {
+                        let rawLink = data.link && data.link[index] ? data.link[index] : '';
+                        if (rawLink && rawLink.startsWith('/')) rawLink = 'https://restaurantassociation.com' + rawLink;
+
+                        let rawImage = data.image && data.image[index] ? data.image[index] : '';
+                        if (rawImage && rawImage.startsWith('/')) rawImage = 'https://restaurantassociation.com' + rawImage;
+
+                        return {
+                            title: title,
+                            description: data.description ? data.description[index] : '',
+                            link: rawLink,
+                            image: rawImage,
+                            content: data.content ? data.content[index] : ''
+                        };
+                    });
                 } else if (Array.isArray(responseData)) {
                     parsedItems = responseData;
                 }
@@ -782,6 +778,8 @@
                 } else if (tabId === 'blogs') {
                     parsedItems = parsedItems.filter(item => item.link && (item.link.includes('/blog/') || item.link.includes('/blogs/')));
                 }
+
+                window.appArticles = parsedItems;
 
                 if (!parsedItems || parsedItems.length === 0) {
                     container.innerHTML = `<p class="text-muted small text-center py-4">No content currently available.</p>`;
@@ -798,18 +796,10 @@
                     if (heroItem.link && heroItem.link.includes('/news/')) { heroBadgeClass = "tag-news"; heroBadgeText = "NEWS"; } 
                     else if (heroItem.link && (heroItem.link.includes('/blog/') || heroItem.link.includes('/blogs/'))) { heroBadgeClass = "tag-backoffice"; heroBadgeText = "BLOG"; }
                     
-                    let heroImageHtml = heroItem.image || 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?q=80&w=1000&auto=format&fit=crop';
-                    if (heroImageHtml.startsWith('/')) { heroImageHtml = 'https://restaurantassociation.com' + heroImageHtml; }
-
-                    const encodedHeroItem = encodeURIComponent(JSON.stringify({
-                        title: heroItem.title || 'Untitled',
-                        link: heroItem.link || '',
-                        image: heroImageHtml,
-                        description: heroItem.description || ''
-                    }));
+                    const heroImageHtml = (heroItem.image && heroItem.image.trim() !== '') ? heroItem.image : 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?q=80&w=1000&auto=format&fit=crop';
 
                     const homeHeaderHtml = `
-                        <div class="hero-card" data-item="${encodedHeroItem}" onclick="openNativeArticle(this.getAttribute('data-item'))">
+                        <div class="hero-card" onclick="openNativeArticle(0)">
                             <img src="${heroImageHtml}" class="hero-bg-image" alt="Hero Image">
                             <div class="hero-gradient"></div>
                             <span class="news-tag ${heroBadgeClass} hero-tag">${heroBadgeText}</span>
@@ -833,13 +823,13 @@
                     `;
                     container.insertAdjacentHTML('beforeend', homeHeaderHtml);
 
-                    parsedItems.slice(1).forEach((item) => {
-                        container.insertAdjacentHTML('beforeend', createCardHtml(item));
+                    parsedItems.slice(1).forEach((item, index) => {
+                        container.insertAdjacentHTML('beforeend', createCardHtml(item, index + 1));
                     });
                 } 
                 else {
-                    parsedItems.forEach((item) => {
-                        container.insertAdjacentHTML('beforeend', createCardHtml(item));
+                    parsedItems.forEach((item, index) => {
+                        container.insertAdjacentHTML('beforeend', createCardHtml(item, index));
                     });
                 }
 
@@ -853,15 +843,15 @@
             }
         }
 
-        // --- NEW LIVE SCRAPER ENGINE FOR FULL ARTICLE & HI-RES IMAGE ---
-        function openNativeArticle(encodedItem) {
-            if (!encodedItem) return;
-            const item = JSON.parse(decodeURIComponent(encodedItem));
+        // --- PERFECTED LIVE WEB SCRAPER ENGINE ---
+        function openNativeArticle(index) {
+            const item = window.appArticles[index];
+            if (!item) return;
             
-            // 1. Initial State: Load what we know immediately
-            document.getElementById('ad-title').innerText = item.title;
+            // 1. Initial State
+            document.getElementById('ad-title').innerText = item.title || 'Untitled';
             
-            // Fix Image Fallbacks
+            // Because URLs are now fixed above, the image will load immediately!
             const defaultImg = 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?q=80&w=1000&auto=format&fit=crop';
             const imgEl = document.getElementById('ad-hero-img');
             imgEl.src = (item.image && item.image.trim() !== '') ? item.image : defaultImg;
@@ -878,66 +868,68 @@
             tagEl.innerText = badgeText;
             
             const bodyEl = document.getElementById('ad-body');
-            
-            // 2. Show a loading spinner inside the article body
             bodyEl.innerHTML = `
                 <div class="loading-spinner">
                     <div class="spinner-border spinner-border-sm text-primary mb-2" role="status"></div>
-                    <span style="font-size: 0.85rem;">Loading full article...</span>
+                    <span style="font-size: 0.85rem;">Extracting full article...</span>
                 </div>
             `;
             
-            // Slide the view open
             document.getElementById('article-detail-view').classList.add('show');
             
-            // 3. MAGIC: Dynamically scrape the live article webpage behind the scenes!
+            // 2. Safely Fetch Full Content!
             if (item.link) {
-                // We use a safe public proxy to read the website's HTML without CORS errors
+                // The link is now guaranteed to start with https://, so the proxy will never crash!
                 fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(item.link)}`)
                 .then(response => {
                     if (response.ok) return response.json();
-                    throw new Error('Network response was not ok.');
+                    throw new Error('Network failed');
                 })
                 .then(data => {
-                    // Turn the string of HTML into a real, searchable document
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(data.contents, "text/html");
                     
-                    // --- A. Extract the True High-Res Image ---
-                    // By checking the website's meta tags, we bypass any broken "lazy loading" thumbnail images!
+                    // A. Hunt for high-res cover image inside the web page
                     const metaImage = doc.querySelector('meta[property="og:image"]');
                     if (metaImage && metaImage.content) {
                         imgEl.src = metaImage.content;
                     }
                     
-                    // --- B. Extract the Full Article Paragraphs ---
+                    // B. Hunt for article paragraphs
                     let articleContent = "";
-                    const articleTag = doc.querySelector('article'); 
+                    let paragraphs = doc.querySelectorAll('article p, .article-content p, main p');
                     
-                    // Find the paragraphs inside the main article container
-                    const paragraphs = articleTag ? articleTag.querySelectorAll('p') : doc.querySelectorAll('p');
-                    
-                    paragraphs.forEach(p => {
-                        // Skip tiny menus, navigation text, and empty spaces
-                        if (p.innerText.trim().length > 30) {
-                            articleContent += `<p>${p.innerHTML}</p>`;
-                        }
+                    // Filter out short navigation text or menus
+                    let validParagraphs = Array.from(paragraphs).filter(p => {
+                        return p.innerText.trim().length > 50 && !p.innerText.includes('Table of Contents');
                     });
                     
-                    // Inject the fully scraped article into the app!
+                    // Safe Fallback if the website layout changed
+                    if (validParagraphs.length === 0) {
+                        validParagraphs = Array.from(doc.querySelectorAll('p')).filter(p => p.innerText.trim().length > 60);
+                    }
+                    
+                    validParagraphs.forEach(p => {
+                        articleContent += `<p style="margin-bottom: 16px;">${p.innerHTML}</p>`;
+                    });
+                    
+                    // Apply to screen
                     if (articleContent) {
                         bodyEl.innerHTML = `<div style="font-weight: 400; line-height: 1.7; color: #222;">${articleContent}</div>`;
                     } else {
-                        // Safe Fallback if the site's layout changes
-                        bodyEl.innerHTML = `<p>${item.description}</p><p class="text-muted mt-4"><em>Cannot display full text.</em></p>`;
+                        // Fallback button if the website blocks bots
+                        throw new Error('No paragraphs found');
                     }
                 })
                 .catch(err => {
                     console.error("Scraper Error:", err);
-                    // Safe Fallback if internet connection dips
                     bodyEl.innerHTML = `
-                        <p style="font-weight:600;">${item.description}</p>
-                        <p class="text-muted small mt-4"><em>Failed to load full article via live web extraction.</em></p>
+                        <p style="font-weight:500; font-size: 1.1rem; margin-bottom: 20px;">${item.description}</p>
+                        <div class="alert alert-light border text-center p-4">
+                            <i class="bi bi-file-text mb-2 d-block" style="font-size: 2rem; color: #cbd5e1;"></i>
+                            <p class="small text-muted mb-3">The full text could not be extracted automatically.</p>
+                            <a href="${item.link}" target="_blank" class="btn btn-primary rounded-pill w-100">Read on Website</a>
+                        </div>
                     `;
                 });
             } else {
@@ -947,6 +939,10 @@
 
         function closeNativeArticle() {
             document.getElementById('article-detail-view').classList.remove('show');
+            // Small cleanup to prevent flashing old data
+            setTimeout(() => {
+                document.getElementById('ad-body').innerHTML = '';
+            }, 300);
         }
 
         // Drawer Controls
