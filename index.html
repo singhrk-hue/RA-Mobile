@@ -409,15 +409,12 @@
 
         /* --- PERFECTED NATIVE ARTICLE DETAIL VIEW --- */
         .article-detail-view {
-            /* Changed to 'fixed' to perfectly overlay the entire app frame */
-            position: fixed;
+            /* FIX 1: Returned to 'absolute' so it perfectly stays inside the iPhone container */
+            position: absolute;
             top: 0;
-            
-            /* Pushed entirely off-screen to the right so it CANNOT block clicks */
-            left: 100%; 
+            left: 100%; /* Keeps it off-screen to the right */
             
             width: 100%;
-            max-width: 390px;
             height: 100%;
             background: #f6f4ed; 
             z-index: 2000;
@@ -428,14 +425,12 @@
             -ms-overflow-style: none;  
             scrollbar-width: none;
             padding-bottom: 40px;
-            
-            /* Safely disables interactions when hidden */
             visibility: hidden; 
         }
         .article-detail-view::-webkit-scrollbar { display: none; }
         
         .article-detail-view.show {
-            left: 0; /* Slides onto the screen perfectly */
+            left: 0;
             visibility: visible;
         }
         
@@ -607,7 +602,6 @@
                 </div>
             </main>
 
-            <!-- FIX 1: Bulletproof click actions directly on the tabs -->
             <nav class="ios-tabbar">
                 <a href="#" class="tab-item active" id="tab-home" onclick="switchTab('home'); return false;">
                     <i class="bi bi-house"></i>
@@ -680,20 +674,19 @@
             jobs: 'https://sa1.altametrics.com/webhook/get-jobs'
         };
 
-        // FIX 2: A perfect global memory array to hold the exact data safely
-        window.appArticles = [];
+        // FIX 2: Global Dictionary maps every article securely to its URL. 
+        // This makes it 100% impossible to open the wrong image/article!
+        window.articleDictionary = {};
 
         document.addEventListener("DOMContentLoaded", () => {
             fetchTabContent('home');
         });
 
         function switchTab(targetViewId) {
-            // Update active state on footer tabs
             document.querySelectorAll('.ios-tabbar .tab-item').forEach(t => t.classList.remove('active'));
             const activeTab = document.getElementById('tab-' + targetViewId);
             if (activeTab) activeTab.classList.add('active');
 
-            // Switch the content view
             document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
             const activeView = document.getElementById('view-' + targetViewId);
             if (activeView) activeView.classList.add('active');
@@ -701,7 +694,10 @@
             fetchTabContent(targetViewId);
         }
 
-        function createCardHtml(item, index) {
+        function createCardHtml(item) {
+            // Save item directly into dictionary
+            if(item.link) { window.articleDictionary[item.link] = item; }
+
             let badgeClass = "tag-news";
             let badgeText = "ARTICLE";
             
@@ -716,9 +712,9 @@
             const dateText = "Recent"; 
             const imageHtml = item.image ? `<img src="${item.image}" alt="Image" class="news-card-image">` : '';
 
-            // Passes the exact memory index to prevent JSON string breaking!
+            // The click event securely uses the article's unique URL link!
             return `
-                <div class="news-card" onclick="openNativeArticle(${index})">
+                <div class="news-card" onclick="openNativeArticle('${item.link}')">
                     <div class="news-card-content">
                         <div class="news-meta">
                             <span class="news-tag ${badgeClass}">${badgeText}</span>
@@ -769,18 +765,16 @@
                     parsedItems = parsedItems.filter(item => item.link && (item.link.includes('/blog/') || item.link.includes('/blogs/')));
                 }
 
-                // Save to our safe global memory
-                window.appArticles = parsedItems;
-
-                if (!window.appArticles || window.appArticles.length === 0) {
+                if (!parsedItems || parsedItems.length === 0) {
                     container.innerHTML = `<p class="text-muted small text-center py-4">No content currently available.</p>`;
                     return;
                 }
 
                 container.innerHTML = '';
                 
-                if (tabId === 'home' && window.appArticles.length > 0) {
-                    const heroItem = window.appArticles[0];
+                if (tabId === 'home' && parsedItems.length > 0) {
+                    const heroItem = parsedItems[0];
+                    if(heroItem.link) { window.articleDictionary[heroItem.link] = heroItem; }
                     
                     let heroBadgeClass = "tag-news";
                     let heroBadgeText = "ARTICLE";
@@ -790,7 +784,7 @@
                     const heroImageHtml = (heroItem.image && heroItem.image.trim() !== '') ? heroItem.image : 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?q=80&w=1000&auto=format&fit=crop';
 
                     const homeHeaderHtml = `
-                        <div class="hero-card" onclick="openNativeArticle(0)">
+                        <div class="hero-card" onclick="openNativeArticle('${heroItem.link}')">
                             <img src="${heroImageHtml}" class="hero-bg-image" alt="Hero Image">
                             <div class="hero-gradient"></div>
                             <span class="news-tag ${heroBadgeClass} hero-tag">${heroBadgeText}</span>
@@ -814,13 +808,13 @@
                     `;
                     container.insertAdjacentHTML('beforeend', homeHeaderHtml);
 
-                    window.appArticles.slice(1).forEach((item, index) => {
-                        container.insertAdjacentHTML('beforeend', createCardHtml(item, index + 1));
+                    parsedItems.slice(1).forEach((item) => {
+                        container.insertAdjacentHTML('beforeend', createCardHtml(item));
                     });
                 } 
                 else {
-                    window.appArticles.forEach((item, index) => {
-                        container.insertAdjacentHTML('beforeend', createCardHtml(item, index));
+                    parsedItems.forEach((item) => {
+                        container.insertAdjacentHTML('beforeend', createCardHtml(item));
                     });
                 }
 
@@ -834,9 +828,10 @@
             }
         }
 
-        // --- PERFECTED DETAIL LOGIC ---
-        function openNativeArticle(index) {
-            const item = window.appArticles[index];
+        // --- PERFECTED NATIVE ARTICLE VIEW ---
+        function openNativeArticle(linkUrl) {
+            // Retrieves the exact item from the dictionary using its URL
+            const item = window.articleDictionary[linkUrl];
             if (!item) return;
             
             const defaultImg = 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?q=80&w=1000&auto=format&fit=crop';
@@ -856,7 +851,7 @@
             tagEl.className = `ad-tag ${badgeClass}`;
             tagEl.innerText = badgeText;
             
-            // 3. FIX: Displaying the content safely.
+            // Re-added the missing "Whole Article" data connection
             const cleanContent = item.content || item.description || 'Article text is currently unavailable.';
             
             document.getElementById('ad-body').innerHTML = `
