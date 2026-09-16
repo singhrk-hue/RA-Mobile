@@ -139,7 +139,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* --- HERO CARD (Home Tab Only) --- */
+        /* --- HERO CARD --- */
         .hero-card {
             position: relative;
             width: 100%;
@@ -323,6 +323,121 @@
             background: #eee;
         }
 
+        /* --- NEW "MORE" TAB STYLES --- */
+        .more-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            margin-bottom: 24px;
+        }
+        .more-title {
+            font-family: 'Merriweather', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #111;
+            margin: 0;
+        }
+        .more-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .more-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .more-card {
+            background: #ffffff;
+            border: 1px solid #e8e5dc;
+            border-radius: 12px;
+            padding: 16px;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 110px;
+            cursor: pointer;
+        }
+        .more-icon-circle {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #ffede8;
+            color: #f05637;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+        }
+        .more-card-text {
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: #111;
+        }
+        .more-arrow {
+            width: 22px;
+            height: 22px;
+            background: #0b5ed7;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+        }
+        .more-section-title {
+            font-family: 'Merriweather', serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #111;
+            margin-bottom: 12px;
+        }
+        .more-list-item {
+            background: #ffffff;
+            border: 1px solid #e8e5dc;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            cursor: pointer;
+        }
+        .more-list-item.highlight {
+            border: 2px solid #00aaff;
+            box-shadow: 0 4px 12px rgba(0, 170, 255, 0.15);
+        }
+        .more-list-text {
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: #111;
+            flex: 1;
+            margin-left: 16px;
+        }
+        .btn-logout {
+            width: 100%;
+            background: transparent;
+            border: 1px solid #d9534f;
+            color: #d9534f;
+            padding: 14px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-top: 16px;
+            margin-bottom: 30px;
+            cursor: pointer;
+            text-align: center;
+        }
+
         /* --- TAB BAR (Footer) --- */
         .ios-tabbar {
             background: #ffffff;
@@ -367,43 +482,7 @@
         }
         .tab-item.active .active-dot { opacity: 1; }
 
-        /* Drawer Overlay */
-        .drawer-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.4);
-            z-index: 1040;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.25s ease;
-        }
-        .drawer-overlay.show {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .offcanvas-drawer {
-            position: absolute;
-            top: 0;
-            right: -280px;
-            width: 280px;
-            height: 100%;
-            background: #ffffff;
-            z-index: 1050;
-            box-shadow: -5px 0 25px rgba(0,0,0,0.15);
-            transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            display: flex;
-            flex-direction: column;
-            padding-top: 50px;
-        }
-        .offcanvas-drawer.show {
-            right: 0;
-        }
-
-        /* --- PERFECTED NATIVE ARTICLE DETAIL VIEW --- */
+        /* --- NATIVE ARTICLE DETAIL VIEW --- */
         .article-detail-view {
             position: absolute;
             top: 0;
@@ -481,7 +560,7 @@
         }
         .ad-meta-row {
             display: flex;
-            justify-content: flex-start; /* Removed space-between since date is gone */
+            justify-content: flex-start;
             align-items: center;
             margin-bottom: 16px;
         }
@@ -560,25 +639,6 @@
                 </marquee>
             </div>
 
-            <div class="drawer-overlay" id="drawer-overlay"></div>
-            <div class="offcanvas-drawer" id="offcanvas-drawer">
-                <div class="d-flex justify-content-between align-items-center px-4 pb-3 border-bottom">
-                    <span class="fw-bold text-dark" style="font-size: 1rem;">More Options</span>
-                    <button class="btn-close" id="btn-close-drawer" aria-label="Close"></button>
-                </div>
-                <div class="list-group list-group-flush py-2">
-                    <a href="#" class="list-group-item list-group-item-action border-0 py-3 px-4 menu-item-link" onclick="closeDrawer()">
-                        <i class="bi bi-tv me-3 text-danger"></i> TV Shows
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action border-0 py-3 px-4 menu-item-link" onclick="closeDrawer()">
-                        <i class="bi bi-folder2-open me-3 text-warning"></i> Resources
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action border-0 py-3 px-4 menu-item-link" onclick="closeDrawer()">
-                        <i class="bi bi-star me-3 text-info"></i> Benefits
-                    </a>
-                </div>
-            </div>
-
             <main class="app-content">
                 <div id="view-home" class="app-view active">
                     <div class="data-container"></div>
@@ -594,6 +654,62 @@
 
                 <div id="view-jobs" class="app-view">
                     <div class="data-container"></div>
+                </div>
+
+                <!-- --- NEW "MORE" VIEW --- -->
+                <div id="view-more" class="app-view">
+                    <div class="more-header">
+                        <h1 class="more-title">More</h1>
+                        <!-- Avatar placeholder image from UI Avatars -->
+                        <img src="https://ui-avatars.com/api/?name=Jane+Doe&background=4a4a4a&color=fff&size=100" class="more-avatar" alt="Profile">
+                    </div>
+
+                    <div class="more-grid">
+                        <div class="more-card">
+                            <div class="more-icon-circle"><i class="bi bi-tv"></i></div>
+                            <div class="more-card-text">TV Shows</div>
+                            <div class="more-arrow"><i class="bi bi-chevron-right"></i></div>
+                        </div>
+                        <div class="more-card">
+                            <div class="more-icon-circle"><i class="bi bi-mortarboard"></i></div>
+                            <div class="more-card-text">Academy</div>
+                            <div class="more-arrow"><i class="bi bi-chevron-right"></i></div>
+                        </div>
+                        <div class="more-card">
+                            <div class="more-icon-circle"><i class="bi bi-file-text"></i></div>
+                            <div class="more-card-text">Resources</div>
+                            <div class="more-arrow"><i class="bi bi-chevron-right"></i></div>
+                        </div>
+                        <div class="more-card">
+                            <div class="more-icon-circle"><i class="bi bi-star"></i></div>
+                            <div class="more-card-text">Benefits</div>
+                            <div class="more-arrow"><i class="bi bi-chevron-right"></i></div>
+                        </div>
+                    </div>
+
+                    <h2 class="more-section-title">Account</h2>
+                    
+                    <div class="more-list">
+                        <div class="more-list-item">
+                            <div class="more-icon-circle" style="margin-bottom: 0;"><i class="bi bi-person-badge"></i></div>
+                            <div class="more-list-text">Account & Membership</div>
+                            <div class="more-arrow" style="position: static;"><i class="bi bi-chevron-right"></i></div>
+                        </div>
+                        
+                        <div class="more-list-item">
+                            <div class="more-icon-circle" style="margin-bottom: 0;"><i class="bi bi-gear"></i></div>
+                            <div class="more-list-text">Settings</div>
+                            <div class="more-arrow" style="position: static;"><i class="bi bi-chevron-right"></i></div>
+                        </div>
+                        
+                        <div class="more-list-item highlight">
+                            <div class="more-icon-circle" style="margin-bottom: 0;"><i class="bi bi-telephone"></i></div>
+                            <div class="more-list-text">About & Contact</div>
+                            <div class="more-arrow" style="position: static;"><i class="bi bi-chevron-right"></i></div>
+                        </div>
+                    </div>
+
+                    <button class="btn-logout">Logout</button>
                 </div>
             </main>
 
@@ -618,9 +734,10 @@
                     <span>JOBS</span>
                     <div class="active-dot"></div>
                 </a>
-                <a href="#" class="tab-item" onclick="openDrawer(); return false;">
+                <a href="#" class="tab-item" id="tab-more" onclick="switchTab('more'); return false;">
                     <i class="bi bi-list"></i>
                     <span>MORE</span>
+                    <div class="active-dot"></div>
                 </a>
             </nav>
 
@@ -683,7 +800,32 @@
             const activeView = document.getElementById('view-' + targetViewId);
             if (activeView) activeView.classList.add('active');
 
-            fetchTabContent(targetViewId);
+            // Do not attempt to fetch data for the 'More' tab since it's hardcoded UI
+            if (targetViewId !== 'more') {
+                fetchTabContent(targetViewId);
+            }
+        }
+
+        // SMART CATEGORY EXTRACTOR
+        function getCategory(item) {
+            if (item.category && item.category.trim() !== '') {
+                return item.category.toUpperCase();
+            }
+            if (item.link) {
+                try {
+                    let urlStr = item.link.startsWith('/') ? 'https://restaurantassociation.com' + item.link : item.link;
+                    let urlObj = new URL(urlStr);
+                    let parts = urlObj.pathname.split('/').filter(Boolean);
+                    
+                    if (parts.length >= 3 && (parts[0].toLowerCase() === 'news' || parts[0].toLowerCase() === 'blog' || parts[0].toLowerCase() === 'blogs')) {
+                        return parts[1].replace(/-/g, ' ').toUpperCase();
+                    }
+                } catch(e) {
+                    console.log("Could not parse URL category", e);
+                }
+            }
+            if (item.link && (item.link.includes('/blog/') || item.link.includes('/blogs/'))) return "BLOG";
+            return "NEWS";
         }
 
         function createCardHtml(item, index) {
@@ -691,9 +833,8 @@
             if (item.link && (item.link.includes('/blog/') || item.link.includes('/blogs/'))) {
                 badgeClass = "tag-backoffice";
             }
-            // Use specific category if n8n provides it, otherwise fallback.
-            let badgeText = item.category ? item.category : (badgeClass === "tag-news" ? "NEWS" : "BLOG");
             
+            let badgeText = getCategory(item);
             const imageHtml = item.image ? `<img src="${item.image}" alt="Image" class="news-card-image">` : '';
 
             return `
@@ -743,7 +884,7 @@
                             link: rawLink,
                             image: rawImage,
                             content: data.content ? data.content[index] : '',
-                            category: data.category ? data.category[index] : ''
+                            category: data.category ? data.category[index] : (data.categories ? data.categories[index] : '')
                         };
                     });
                 } else if (Array.isArray(responseData)) {
@@ -772,8 +913,8 @@
                     if (heroItem.link && (heroItem.link.includes('/blog/') || heroItem.link.includes('/blogs/'))) { 
                         heroBadgeClass = "tag-backoffice"; 
                     }
-                    let heroBadgeText = heroItem.category ? heroItem.category : (heroBadgeClass === "tag-news" ? "NEWS" : "BLOG");
                     
+                    let heroBadgeText = getCategory(heroItem);
                     const heroImageHtml = (heroItem.image && heroItem.image.trim() !== '') ? heroItem.image : 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?q=80&w=1000&auto=format&fit=crop';
 
                     const homeHeaderHtml = `
@@ -791,7 +932,7 @@
                             <div class="filter-pill active">ALL</div>
                             <div class="filter-pill" onclick="switchTab('news')">NEWS</div>
                             <div class="filter-pill" onclick="switchTab('blogs')">BLOG</div>
-                            <div class="filter-pill" onclick="openDrawer()">SHOWS</div>
+                            <div class="filter-pill" onclick="switchTab('more')">SHOWS</div>
                         </div>
 
                         <div class="section-header-row">
@@ -836,8 +977,8 @@
             if (item.link && (item.link.includes('/blog/') || item.link.includes('/blogs/'))) {
                 badgeClass = "tag-backoffice";
             }
-            let badgeText = item.category ? item.category : (badgeClass === "tag-news" ? "NEWS" : "BLOG");
             
+            let badgeText = getCategory(item);
             const tagEl = document.getElementById('ad-tag');
             tagEl.className = `ad-tag ${badgeClass}`;
             tagEl.innerText = badgeText;
@@ -864,21 +1005,6 @@
             document.getElementById('article-detail-view').classList.remove('show');
         }
 
-        // Drawer Controls
-        const drawerOverlay = document.getElementById('drawer-overlay');
-        const offcanvasDrawer = document.getElementById('offcanvas-drawer');
-
-        function openDrawer() {
-            drawerOverlay.classList.add('show');
-            offcanvasDrawer.classList.add('show');
-        }
-
-        function closeDrawer() {
-            drawerOverlay.classList.remove('show');
-            offcanvasDrawer.classList.remove('show');
-        }
-
-        drawerOverlay.addEventListener('click', closeDrawer);
     </script>
 </body>
 </html>
